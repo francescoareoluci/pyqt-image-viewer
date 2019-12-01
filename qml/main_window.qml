@@ -17,18 +17,25 @@ QtObject {
         //color: "#f7f7f7"
         FontLoader { id: webFont; source: "../assets/Lato-Regular.ttf" }
 
+        // Setting the mainWindow background image
         background: BorderImage { 
-                //width: 100; height: 100
                 horizontalTileMode: BorderImage.Repeat
                 verticalTileMode: BorderImage.Repeat
                 source: "../assets/silver_scales.png"
         }
+
         onClosing: {
-            // Close any existing other windows
+            // Close any other existing windows
             exifWindow.visible = false
         }
+
+        // This prevents the user to maximize the window
+        // TODO: fixme
         flags: Qt.Dialog
 
+        // Setting the header of main page,
+        // which contains the title, the image
+        // selection button and the exif data button
         header: Label {
             id: titleLabel
             text: "Image Viewer"
@@ -45,27 +52,23 @@ QtObject {
 
             RowLayout {
                 anchors.right: parent.right
-                //Layout.topMargin: 15
-                //Layout.bottomMargin: 15
-                //Layout.leftMargin: 30
             
                 Button {
                     id: exifButton
+                    // TODO: how to set font color without this trick?
                     text: "<font color=\"#ffffff\"><u>View EXIF data</u></font>"
                     enabled: false
                     font.pointSize: 10
                     font.family: webFont.name
                     visible: false
-                    //Layout.fillWidth: true; Layout.fillHeight: true
                     padding: 10
                     width: 170
                     Layout.topMargin: 10
                     Layout.rightMargin: 5
+                    // Add a background rectangle to set border radius
                     background: Rectangle {
                         radius: 5
                         color: "#8fbccc"
-                        //border.color: "gray"
-		    		    //border.width: 1
                     }
                     onClicked: {
                         exifWindow.visible = true
@@ -82,21 +85,20 @@ QtObject {
                     onClicked: {
                         fileDialog.visible = true
                     }
-                    //Layout.fillWidth: true; Layout.fillHeight: true
                     Layout.topMargin: 10
                     Layout.rightMargin: 30
                     // Add a background rectangle to set border radius
                     background: Rectangle {
                         radius: 5
                         color: "white"
-                        //border.color: "gray"
-			    	    //border.width: 1
                     }
                 }
 
             }
         }
 
+        // File dialog used to select an image
+        // TODO: add jpg filter
         FileDialog {
             visible: false
             id: fileDialog
@@ -104,7 +106,12 @@ QtObject {
             folder: shortcuts.home
             onAccepted: {
                 console.log("You chose: " + fileDialog.fileUrls)
-                displayedImage.source = fileDialog.fileUrl
+                
+                // Cleaning the file url
+                var path = fileDialog.fileUrl.toString();
+                path = path.replace(/^(file:\/{3})/,"");
+                var cleanPath = decodeURIComponent(path);
+
                 exifButton.enabled = true
                 exifButton.visible = true
                 skipForward.enabled = true
@@ -112,7 +119,16 @@ QtObject {
                 rotateLeft.enabled = true
                 rotateRight.enabled = true
                 fileNameLabel.visible = true
-                fileNameLabel.text = fileDialog.fileUrl
+                fileNameLabel.text = cleanPath
+
+                // Resetting the state of right and left rotate buttons
+                rotateLeft.rotated = 0
+                rotateRight.rotated = 0
+                // Resetting the rotation angle
+                displayedImage.rotationAngle = 0
+
+                // Setting the image source
+                displayedImage.source = fileDialog.fileUrl
             }
             onRejected: {
                 console.log("Canceled")
@@ -120,7 +136,7 @@ QtObject {
         }
 
         ColumnLayout {
-            // Setting the size and position of the main layout
+            // Setting the size and position of the layout
             width: { parent.width - 60 }
             height: { parent.height - 60}
             anchors.centerIn: parent
@@ -147,6 +163,8 @@ QtObject {
                 fillMode: Image.PreserveAspectFit
                 Layout.fillWidth: true; Layout.fillHeight: true
                 //anchors.fill: parent
+                // By centering the image in the center
+                // we can rotate it easily
                 anchors.centerIn: parent
                 transform: Rotation { origin.x: displayedImage.width / 2; origin.y: displayedImage.height / 2; angle: displayedImage.rotationAngle}
             }
@@ -166,8 +184,6 @@ QtObject {
                     background: Rectangle {
                         radius: 5
                         color: "#D2D5DD"
-                        //border.color: "gray"
-		    		    //border.width: 1
                     }
                 }
 
@@ -182,8 +198,6 @@ QtObject {
                     background: Rectangle {
                         radius: 5
                         color: "#D2D5DD"
-                        //border.color: "gray"
-	    			    //border.width: 1
                     }
                 }
 
@@ -197,9 +211,21 @@ QtObject {
                     Layout.fillWidth: true; Layout.fillHeight: true
                     property var rotated: 0
                     onClicked: {
-                        if (rotated == 0) {
+                        // Handling the rotation, considering the right rotate
+                        // button state
+                        if (rotated == 0 && rotateRight.rotated == 0) {
                             displayedImage.width = displayedImage.height
                             rotated = 1
+                        }
+                        else if (rotated == 0 && rotateRight.rotated == 1) {
+                            displayedImage.width = parent.width
+                            rotateRight.rotated = 0
+                            rotated = 0
+                        }
+                        else if (rotated == 1 && rotateRight.rotated == 1) {
+                            displayedImage.width = displayedImage.height
+                            rotateRight.rotated = 0
+                            rotated = 0 
                         }
                         else {
                             displayedImage.width = parent.width
@@ -210,8 +236,6 @@ QtObject {
                     background: Rectangle {
                         radius: 5
                         color: "#D2D5DD"
-                        //border.color: "gray"
-	    			    //border.width: 1
                     }
                 }
 
@@ -225,9 +249,21 @@ QtObject {
                     Layout.fillWidth: true; Layout.fillHeight: true
                     property var rotated: 0
                     onClicked: {
-                        if (rotated == 0 ) {
+                        // Handling the rotation, considering the left rotate
+                        // button state
+                        if (rotated == 0 && rotateLeft.rotated == 0) {
                             displayedImage.width = displayedImage.height
                             rotated = 1
+                        }
+                        else if (rotated == 0 && rotateLeft.rotated == 1) {
+                            displayedImage.width = parent.width
+                            rotateLeft.rotated = 0
+                            rotated = 0
+                        }
+                        else if (rotated == 1 && rotateLeft.rotated == 1) {
+                            displayedImage.width = displayedImage.height
+                            rotateLeft.rotated = 0
+                            rotated = 0 
                         }
                         else {
                             displayedImage.width = parent.width
@@ -238,14 +274,14 @@ QtObject {
                     background: Rectangle {
                         radius: 5
                         color: "#D2D5DD"
-                        //border.color: "gray"
-    				    //border.width: 1
                     }
                 }
     		}
         }
     }
 
+    // A new window that will contains exif data of
+    // selected image
     property var testWindow: ApplicationWindow {
         id: exifWindow
         width: 300; height: 400
