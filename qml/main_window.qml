@@ -30,6 +30,7 @@ QtObject {
         flags: Qt.Dialog
 
         header: Label {
+            id: titleLabel
             text: "Image Viewer"
             font.family: webFont.name
             font.pointSize: 15
@@ -41,56 +42,28 @@ QtObject {
                 color: "#8fbccc"
                 Layout.fillWidth: true; Layout.fillHeight: true
             }            
-        }
-
-        ColumnLayout {
-            // Setting the size and position of the main layout
-            width: { parent.width - 60 }
-            height: { parent.height - 60 } 
-            anchors.centerIn: parent
 
             RowLayout {
-
-	    	    // Define the spacing between the elements of the
-	    	    // column layout
-	    	    spacing: 10
-                id: firstRow
-
+                anchors.right: parent.right
+                //Layout.topMargin: 15
+                //Layout.bottomMargin: 15
+                //Layout.leftMargin: 30
+            
                 Button {
-                    id: dialogButton
-                    text: "Choose an image"
-                    padding: 10
-                    width: 170
-                    font.family: webFont.name
-                    onClicked: {
-                        fileDialog.visible = true
-                    }
-                    //Layout.fillWidth: true; Layout.fillHeight: true
-    
-                    // Add a background rectangle to set border radius
-                    background: Rectangle {
-                        radius: 5
-                        color: "#D2D5DD"
-                        //border.color: "gray"
-			    	    //border.width: 1
-                    }
-                }
-
-                Item {
-                    Layout.fillWidth: true; Layout.fillHeight: true
-                }
-    
-		        Button {
                     id: exifButton
-                    text: "View EXIF data"
+                    text: "<font color=\"#ffffff\"><u>View EXIF data</u></font>"
                     enabled: false
+                    font.pointSize: 10
                     font.family: webFont.name
+                    visible: false
                     //Layout.fillWidth: true; Layout.fillHeight: true
                     padding: 10
                     width: 170
+                    Layout.topMargin: 10
+                    Layout.rightMargin: 5
                     background: Rectangle {
                         radius: 5
-                        color: "#D2D5DD"
+                        color: "#8fbccc"
                         //border.color: "gray"
 		    		    //border.width: 1
                     }
@@ -99,26 +72,72 @@ QtObject {
                     }
                 }
 
-                FileDialog {
-                    visible: false
-                    id: fileDialog
-                    title: "Please choose a file"
-                    folder: shortcuts.home
-                    onAccepted: {
-                        console.log("You chose: " + fileDialog.fileUrls)
-                        displayedImage.source = fileDialog.fileUrl
-                        exifButton.enabled = true
-                        skipForward.enabled = true
-                        skipBackward.enabled = true
-                        rotateLeft.enabled = true
-                        rotateRight.enabled = true
-                        fileNameLabel.visible = true
-                        fileNameLabel.text = fileDialog.fileUrl
+                Button {
+                    id: buttonImage
+                    text: "<font color=\"#8fbccc\">Choose an image</font>"
+                    padding: 10
+                    width: 170
+                    font.pointSize: 10
+                    font.family: webFont.name
+                    onClicked: {
+                        fileDialog.visible = true
                     }
-                    onRejected: {
-                        console.log("Canceled")
+                    //Layout.fillWidth: true; Layout.fillHeight: true
+                    Layout.topMargin: 10
+                    Layout.rightMargin: 30
+                    // Add a background rectangle to set border radius
+                    background: Rectangle {
+                        radius: 5
+                        color: "white"
+                        //border.color: "gray"
+			    	    //border.width: 1
                     }
                 }
+
+            }
+        }
+
+        FileDialog {
+            visible: false
+            id: fileDialog
+            title: "Please choose a file"
+            folder: shortcuts.home
+            onAccepted: {
+                console.log("You chose: " + fileDialog.fileUrls)
+                displayedImage.source = fileDialog.fileUrl
+                exifButton.enabled = true
+                exifButton.visible = true
+                skipForward.enabled = true
+                skipBackward.enabled = true
+                rotateLeft.enabled = true
+                rotateRight.enabled = true
+                fileNameLabel.visible = true
+                fileNameLabel.text = fileDialog.fileUrl
+            }
+            onRejected: {
+                console.log("Canceled")
+            }
+        }
+
+        ColumnLayout {
+            // Setting the size and position of the main layout
+            width: { parent.width - 60 }
+            height: { parent.height - 60}
+            anchors.centerIn: parent
+
+            Label {
+                id: fileNameLabel
+                Layout.fillWidth: true; Layout.fillHeight: true
+                font.pointSize: 11
+                font.family: webFont.name
+                text: ""
+                visible: false
+                topPadding: -10
+                bottomPadding: 20
+                leftPadding: 30
+                color: "#066c9c"
+                // This way we can handle multiline
+                wrapMode: Label.WordWrap
             }
 
             Image {
@@ -130,19 +149,6 @@ QtObject {
                 //anchors.fill: parent
                 anchors.centerIn: parent
                 transform: Rotation { origin.x: displayedImage.width / 2; origin.y: displayedImage.height / 2; angle: displayedImage.rotationAngle}
-            }
-
-            Label {
-                id: fileNameLabel
-                Layout.fillWidth: true; Layout.fillHeight: true
-                text: ""
-                visible: false
-                topPadding: 30
-                bottomPadding: 30
-                leftPadding: 15
-                color: "#066c9c"
-                // This way we can handle multiline
-                wrapMode: Label.WordWrap
             }
     		
             RowLayout {
@@ -156,6 +162,7 @@ QtObject {
                     font.family: webFont.name
                     Layout.fillWidth: true; Layout.fillHeight: true
                     padding: 10
+                    Layout.topMargin: 30
                     background: Rectangle {
                         radius: 5
                         color: "#D2D5DD"
@@ -171,6 +178,7 @@ QtObject {
                     Layout.fillWidth: true; Layout.fillHeight: true
                     font.family: webFont.name
                     padding: 10
+                    Layout.topMargin: 30
                     background: Rectangle {
                         radius: 5
                         color: "#D2D5DD"
@@ -182,6 +190,7 @@ QtObject {
                 Button {
                     id: rotateLeft
                     padding: 10
+                    Layout.topMargin: 30
                     text: "Rotate Left"
                     enabled: false
                     font.family: webFont.name
@@ -209,6 +218,7 @@ QtObject {
                 Button {
                     id: rotateRight
                     padding: 10
+                    Layout.topMargin: 30
                     text: "Rotate Right"
                     enabled: false
                     font.family: webFont.name
