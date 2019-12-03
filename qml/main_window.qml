@@ -119,6 +119,16 @@ QtObject {
                 rotateLeft.enabled = true
                 rotateRight.enabled = true
                 fileNameLabel.visible = true
+
+                rotateLeftRect.color = "#8fbccc"
+                rotateLeftImage.source = "../assets/rotate_left.png"
+                rotateRightRect.color = "#8fbccc"
+                rotateRightImage.source = "../assets/rotate_right.png"
+                skipBackwardRect.color = "#8fbccc"
+                skipBackwardImage.source = "../assets/skip_backward.png"
+                skipForwardRect.color = "#8fbccc"
+                skipForwardImage.source = "../assets/skip_forward.png"
+
                 fileNameLabel.text = cleanPath
 
                 // Resetting the state of right and left rotate buttons
@@ -162,7 +172,6 @@ QtObject {
                 source: "../assets/default_image.png"
                 fillMode: Image.PreserveAspectFit
                 Layout.fillWidth: true; Layout.fillHeight: true
-                //anchors.fill: parent
                 // By centering the image in the center
                 // we can rotate it easily
                 anchors.centerIn: parent
@@ -171,47 +180,48 @@ QtObject {
     		
             RowLayout {
 		    	spacing: 30
-                id: lastRow
 
-                Button {
-                    id: skipForward
-                    text: "Next Image"
-                    enabled: false
-                    font.family: webFont.name
-                    Layout.fillWidth: true; Layout.fillHeight: true
-                    padding: 10
-                    Layout.topMargin: 30
-                    background: Rectangle {
-                        radius: 5
-                        color: "#D2D5DD"
-                    }
-                }
-
-                Button {
+                GenericCommandButton {
                     id: skipBackward
-                    text: "Previous Image"
-                    enabled: false
-                    Layout.fillWidth: true; Layout.fillHeight: true
-                    font.family: webFont.name
-                    padding: 10
+
+                    Layout.preferredWidth: 50
                     Layout.topMargin: 30
-                    background: Rectangle {
-                        radius: 5
-                        color: "#D2D5DD"
+                    Layout.leftMargin: 25
+
+                    background: CommandButtonRect {
+                        id: skipBackwardRect
+
+                        CommandButtonImage {
+                            id: skipBackwardImage
+                            source: "../assets/skip_backward_disabled.png"
+                        }
                     }
                 }
 
-                Button {
+                // Spacer item
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                }
+
+                GenericCommandButton {
                     id: rotateLeft
-                    padding: 10
-                    Layout.topMargin: 30
-                    text: "Rotate Left"
-                    enabled: false
-                    font.family: webFont.name
-                    Layout.fillWidth: true; Layout.fillHeight: true
                     property var rotated: 0
+
+                    Layout.topMargin: 30
+                    Layout.preferredWidth: 50
+
+                    background: CommandButtonRect {
+                        id: rotateLeftRect
+
+                        CommandButtonImage {
+                            id: rotateLeftImage
+                            source: "../assets/rotate_left_disabled.png"
+                        }
+                    }
+
                     onClicked: {
-                        // Handling the rotation, considering the right rotate
+                        // Handling the image rotation, considering the right rotate
                         // button state
                         if (rotated == 0 && rotateRight.rotated == 0) {
                             displayedImage.width = displayedImage.height
@@ -231,25 +241,29 @@ QtObject {
                             displayedImage.width = parent.width
                             rotated = 0
                         }
+                        // Setting the angle
                         displayedImage.rotationAngle = displayedImage.rotationAngle - 90
-                    }
-                    background: Rectangle {
-                        radius: 5
-                        color: "#D2D5DD"
                     }
                 }
 
-                Button {
+                GenericCommandButton {
                     id: rotateRight
-                    padding: 10
-                    Layout.topMargin: 30
-                    text: "Rotate Right"
-                    enabled: false
-                    font.family: webFont.name
-                    Layout.fillWidth: true; Layout.fillHeight: true
                     property var rotated: 0
+
+                    Layout.topMargin: 30
+                    Layout.preferredWidth: 50
+                    
+                    background: CommandButtonRect {
+                        id: rotateRightRect
+
+                        CommandButtonImage {
+                            id: rotateRightImage
+                            source: "../assets/rotate_right_disabled.png"
+                        }
+                    }
+
                     onClicked: {
-                        // Handling the rotation, considering the left rotate
+                        // Handling the image rotation, considering the left rotate
                         // button state
                         if (rotated == 0 && rotateLeft.rotated == 0) {
                             displayedImage.width = displayedImage.height
@@ -269,11 +283,31 @@ QtObject {
                             displayedImage.width = parent.width
                             rotated = 0
                         }
+                        // Setting the angle
                         displayedImage.rotationAngle = displayedImage.rotationAngle + 90
                     }
-                    background: Rectangle {
-                        radius: 5
-                        color: "#D2D5DD"
+                }
+
+                // Spacer item
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                }
+
+                GenericCommandButton {
+                    id: skipForward
+
+                    Layout.preferredWidth: 50
+                    Layout.topMargin: 30
+                    Layout.rightMargin: 25
+
+                    background: CommandButtonRect {
+                        id: skipForwardRect
+
+                        CommandButtonImage {
+                            id: skipForwardImage
+                            source: "../assets/skip_forward_disabled.png"
+                        }
                     }
                 }
     		}
@@ -300,7 +334,7 @@ QtObject {
             leftPadding: 15
             color: "white"
             background: Rectangle {
-                color: "#037296"
+                color: "#8fbccc"
                 Layout.fillWidth: true; Layout.fillHeight: true
             }            
          }
@@ -309,9 +343,12 @@ QtObject {
         id: listView
         anchors.fill: parent
         model: listModel
+        spacing: -1
         delegate: Rectangle {
             width: listView.width
-            height: listView.height / 4
+            height: listView.height / 6
+            border.width: 1
+            border.color: "black"
 
             Text {
                 text: "Hour: " + hour
