@@ -104,6 +104,7 @@ QtObject {
             id: fileDialog
             title: "Please choose a file"
             folder: shortcuts.home
+            nameFilters: [ "Image files (*.jpg)" ]
             onAccepted: {
                 console.log("You chose: " + fileDialog.fileUrls)
                 
@@ -149,29 +150,47 @@ QtObject {
             // Setting the size and position of the layout
             width: { parent.width - 60 }
             height: { parent.height - 60}
-            anchors.centerIn: parent
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
 
             Label {
                 id: fileNameLabel
-                Layout.fillWidth: true; Layout.fillHeight: true
-                font.pointSize: 11
+                //Layout.fillWidth: true; Layout.fillHeight: true
+                font.pointSize: 9
                 font.family: webFont.name
                 text: ""
                 visible: false
-                topPadding: -10
-                bottomPadding: 20
+                topPadding: 9
+                bottomPadding: 9
                 leftPadding: 30
-                color: "#066c9c"
+                color: "#8fbccc"
+                verticalAlignment: Text.AlignVCenter
                 // This way we can handle multiline
                 wrapMode: Label.WordWrap
+                background: Rectangle {
+                    color: "white"
+                    width: mainWindow.width
+                }
             }
-
+            
             Image {
                 id: displayedImage
                 property var rotationAngle: 0
+
                 source: "../assets/default_image.png"
                 fillMode: Image.PreserveAspectFit
                 Layout.fillWidth: true; Layout.fillHeight: true
+                Layout.topMargin: 5
+                Layout.leftMargin: 55
+                Layout.bottomMargin: 20
+    
+                //anchors.top: parent.top
+                //anchors.left: parent.left
+                //anchors.right: parent.right
+                //anchors.bottom: parent.bottom
+                
                 // By centering the image in the center
                 // we can rotate it easily
                 anchors.centerIn: parent
@@ -185,8 +204,9 @@ QtObject {
                     id: skipBackward
 
                     Layout.preferredWidth: 50
-                    Layout.topMargin: 30
-                    Layout.leftMargin: 25
+                    Layout.topMargin: 50
+                    Layout.leftMargin: 45
+                    Layout.bottomMargin: 20
 
                     background: CommandButtonRect {
                         id: skipBackwardRect
@@ -208,8 +228,9 @@ QtObject {
                     id: rotateLeft
                     property var rotated: 0
 
-                    Layout.topMargin: 30
+                    Layout.topMargin: 50
                     Layout.preferredWidth: 50
+                    Layout.bottomMargin: 20
 
                     background: CommandButtonRect {
                         id: rotateLeftRect
@@ -250,8 +271,9 @@ QtObject {
                     id: rotateRight
                     property var rotated: 0
 
-                    Layout.topMargin: 30
+                    Layout.topMargin: 50
                     Layout.preferredWidth: 50
+                    Layout.bottomMargin: 20
                     
                     background: CommandButtonRect {
                         id: rotateRightRect
@@ -298,8 +320,9 @@ QtObject {
                     id: skipForward
 
                     Layout.preferredWidth: 50
-                    Layout.topMargin: 30
-                    Layout.rightMargin: 25
+                    Layout.topMargin: 50
+                    Layout.rightMargin: 45
+                    Layout.bottomMargin: 20
 
                     background: CommandButtonRect {
                         id: skipForwardRect

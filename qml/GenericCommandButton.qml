@@ -4,5 +4,5 @@ import QtQuick.Controls 2.0
 Button {
     enabled: false
     font.family: webFont.name
-    padding: 10
+    padding: 5
 }
