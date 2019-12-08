@@ -99,14 +99,11 @@ QtObject {
 
         // File dialog used to select an image
         // TODO: add jpg filter
-        FileDialog {
-            visible: false
+        ImageSelector {
             id: fileDialog
-            title: "Please choose a file"
-            folder: shortcuts.home
-            nameFilters: [ "Image files (*.jpg)" ]
+
             onAccepted: {
-                console.log("You chose: " + fileDialog.fileUrls)
+                console.log("File selected: " + fileDialog.fileUrls)
                 
                 // Cleaning the file url
                 var path = fileDialog.fileUrl.toString();
@@ -125,12 +122,13 @@ QtObject {
                 rotateLeftImage.source = "../assets/rotate_left.png"
                 rotateRightRect.color = "#8fbccc"
                 rotateRightImage.source = "../assets/rotate_right.png"
-                skipBackwardRect.color = "#8fbccc"
-                skipBackwardImage.source = "../assets/skip_backward.png"
-                skipForwardRect.color = "#8fbccc"
-                skipForwardImage.source = "../assets/skip_forward.png"
+                // TODO: handle folder selection
+                //skipBackwardRect.color = "#8fbccc"
+                //skipBackwardImage.source = "../assets/skip_backward.png"
+                //skipForwardRect.color = "#8fbccc"
+                //skipForwardImage.source = "../assets/skip_forward.png"
 
-                fileNameLabel.text = cleanPath
+                fileNameLabel.text = '<b>Image path:</b> ' + cleanPath
 
                 // Resetting the state of right and left rotate buttons
                 rotateLeft.rotated = 0
@@ -140,9 +138,6 @@ QtObject {
 
                 // Setting the image source
                 displayedImage.source = fileDialog.fileUrl
-            }
-            onRejected: {
-                console.log("Canceled")
             }
         }
 
@@ -155,24 +150,8 @@ QtObject {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
 
-            Label {
+            FilenameLabel {
                 id: fileNameLabel
-                //Layout.fillWidth: true; Layout.fillHeight: true
-                font.pointSize: 9
-                font.family: webFont.name
-                text: ""
-                visible: false
-                topPadding: 9
-                bottomPadding: 9
-                leftPadding: 30
-                color: "#8fbccc"
-                verticalAlignment: Text.AlignVCenter
-                // This way we can handle multiline
-                wrapMode: Label.WordWrap
-                background: Rectangle {
-                    color: "white"
-                    width: mainWindow.width
-                }
             }
             
             Image {
@@ -185,11 +164,6 @@ QtObject {
                 Layout.topMargin: 5
                 Layout.leftMargin: 55
                 Layout.bottomMargin: 20
-    
-                //anchors.top: parent.top
-                //anchors.left: parent.left
-                //anchors.right: parent.right
-                //anchors.bottom: parent.bottom
                 
                 // By centering the image in the center
                 // we can rotate it easily
@@ -199,11 +173,20 @@ QtObject {
     		
             RowLayout {
 		    	spacing: 30
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+
+                // Spacer item
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                }
 
                 GenericCommandButton {
                     id: skipBackward
 
-                    Layout.preferredWidth: 50
+                    Layout.preferredWidth: 30
                     Layout.topMargin: 50
                     Layout.leftMargin: 45
                     Layout.bottomMargin: 20
@@ -218,18 +201,12 @@ QtObject {
                     }
                 }
 
-                // Spacer item
-                Item {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                }
-
                 GenericCommandButton {
                     id: rotateLeft
                     property var rotated: 0
 
                     Layout.topMargin: 50
-                    Layout.preferredWidth: 50
+                    Layout.preferredWidth: 30
                     Layout.bottomMargin: 20
 
                     background: CommandButtonRect {
@@ -272,7 +249,7 @@ QtObject {
                     property var rotated: 0
 
                     Layout.topMargin: 50
-                    Layout.preferredWidth: 50
+                    Layout.preferredWidth: 30
                     Layout.bottomMargin: 20
                     
                     background: CommandButtonRect {
@@ -310,16 +287,10 @@ QtObject {
                     }
                 }
 
-                // Spacer item
-                Item {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                }
-
                 GenericCommandButton {
                     id: skipForward
 
-                    Layout.preferredWidth: 50
+                    Layout.preferredWidth: 30
                     Layout.topMargin: 50
                     Layout.rightMargin: 45
                     Layout.bottomMargin: 20
@@ -332,6 +303,12 @@ QtObject {
                             source: "../assets/skip_forward_disabled.png"
                         }
                     }
+                }
+
+                // Spacer item
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
                 }
     		}
         }
@@ -371,7 +348,7 @@ QtObject {
             width: listView.width
             height: listView.height / 6
             border.width: 1
-            border.color: "black"
+            border.color: "#8c8c8c"
 
             Text {
                 text: "Hour: " + hour
@@ -387,14 +364,9 @@ QtObject {
 
             Component.onCompleted: {
                 for (var i = 0; i < 24; i++) {
-                    append(createListElement(i));
+                    var object = {hour: i};
+                    append(object);
                 }
-            }
-
-            function createListElement(index) {
-                return {
-                    hour: index
-                };
             }
         }
     }

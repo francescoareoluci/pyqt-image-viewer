@@ -9,4 +9,6 @@ Image {
     anchors.left: parent.left
     anchors.top: parent.top
     anchors.bottom: parent.bottom
+    anchors.topMargin: 4
+    anchors.bottomMargin: 4
 }
