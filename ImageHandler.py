@@ -1,12 +1,17 @@
 import os
+import exifread
+from PyQt5.QtCore import QObject, pyqtSignal
 from ExifDataObservable import ObservableExifData
 from ImagePathObservable import ObservableImagePath
-import exifread
 
 
-class ImageHandler:
+class ImageHandler(QObject):
+
+    exifDataReady = pyqtSignal()
 
     def __init__(self):
+        super().__init__()
+
         ## Setting the observables, these will be 
         ## the image path of the actual image
         ## and the relative exif data
@@ -14,22 +19,32 @@ class ImageHandler:
         self._observablePath = ObservableImagePath()
 
         ## Connecting observable signals
-        self._observableExifData.observe(self.onExifDataCallback)
-        self._observablePath.observe(self.onImageCallback)
+        self._observableExifData.observe(self._onExifDataCallback)
+        self._observablePath.observe(self._onImageCallback)
+
+
+    def getImagePath(self):
+        return self._observablePath.imagePath
+
+
+    def getExifData(self):
+        return self._observableExifData.exif
 
 
     ## Extract exif data from image
-    def getExifData(self, imagePath):
+    def _getExifData(self, imagePath):
 
         ## Open image file for reading
         f = open(imagePath, 'rb')
 
         ## Return Exif tags
         tags = exifread.process_file(f)
+        print(tags)
 
         exifData = {}
         for tag in tags.keys():
-            if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
+            #if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
+            if tag not in ('JPEGThumbnail'):
                 exifData.update({tag : tags[tag]})
 
         return exifData
@@ -37,7 +52,7 @@ class ImageHandler:
 
     ## Slot for signal coming from qml FileSelector 
     def onImagePathUpdated(self, path):
-
+        
         ## If the path is valid update the observable
         if os.path.isfile(path):
             ## Update observable
@@ -45,20 +60,22 @@ class ImageHandler:
 
 
     ## Callback called whenever the exif data are updated
-    def onExifDataCallback(self, data):
+    def _onExifDataCallback(self, data):
         
         if not data:
             ## Data dict is empty
             print('Empty exif values')
             return
 
-        for k in data.keys():
-            print(k, data[k])
+        #for k in data.keys():
+        #    print(k, data[k])
+
+        self.exifDataReady.emit()
 
 
     ## Callback called whenever the image path is updated
-    def onImageCallback(self, path):
+    def _onImageCallback(self, path):
         
         print(path)
-        tmpExif = self.getExifData(path)
+        tmpExif = self._getExifData(path)
         self._observableExifData.exif = tmpExif
