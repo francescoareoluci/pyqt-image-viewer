@@ -4,6 +4,9 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.0
 import QtQuick.Dialogs 1.0
 import QtQuick.Window 2.1
+import QtGraphicalEffects 1.0
+
+import Example 1.0
 
 QtObject {
 
@@ -13,7 +16,6 @@ QtObject {
         minimumWidth: 600
         minimumHeight: 400
         visible: true; title: "Image Viewer"
-	    Material.theme: Material.Dark
         //color: "#f7f7f7"
         FontLoader { id: webFont; source: "../assets/Lato-Regular.ttf" }
 
@@ -29,13 +31,9 @@ QtObject {
             exifWindow.visible = false
         }
 
-        // This prevents the user to maximize the window
-        // TODO: fixme
-        flags: Qt.Dialog
-
         // Setting the header of main page,
         // which contains the title, the image
-        // selection button and the exif data button
+        // selection button and exif data button
         header: Label {
             id: titleLabel
             text: "Image Viewer"
@@ -45,9 +43,11 @@ QtObject {
             bottomPadding: 15
             leftPadding: 30
             color: "white"
+
             background: Rectangle {
                 color: "#8fbccc"
                 Layout.fillWidth: true; Layout.fillHeight: true
+                //width: parent.width
             }            
 
             RowLayout {
@@ -65,11 +65,12 @@ QtObject {
                     width: 170
                     Layout.topMargin: 10
                     Layout.rightMargin: 5
-                    // Add a background rectangle to set border radius
+
                     background: Rectangle {
                         radius: 5
                         color: "#8fbccc"
                     }
+
                     onClicked: {
                         exifWindow.visible = true
                     }
@@ -77,6 +78,7 @@ QtObject {
 
                 Button {
                     id: buttonImage
+                    // TODO: how to set font color without this trick?
                     text: "<font color=\"#8fbccc\">Choose an image</font>"
                     padding: 10
                     width: 170
@@ -87,7 +89,7 @@ QtObject {
                     }
                     Layout.topMargin: 10
                     Layout.rightMargin: 30
-                    // Add a background rectangle to set border radius
+                    
                     background: Rectangle {
                         radius: 5
                         color: "white"
@@ -98,22 +100,27 @@ QtObject {
         }
 
         // File dialog used to select an image
-        // TODO: add jpg filter
         ImageSelector {
             id: fileDialog
+            objectName: "fileDialog"
+            signal imageSelected(string path)
 
+            // Handle GUI update and emit signal for our controller
             onAccepted: {
                 console.log("File selected: " + fileDialog.fileUrls)
-                
+
                 // Cleaning the file url
                 var path = fileDialog.fileUrl.toString();
-                path = path.replace(/^(file:\/{3})/,"");
+                path = path.replace(/^(file:\/{3})/,"/");
                 var cleanPath = decodeURIComponent(path);
+
+                // Emit signal
+                imageSelected(cleanPath)
 
                 exifButton.enabled = true
                 exifButton.visible = true
-                skipForward.enabled = true
-                skipBackward.enabled = true
+                //skipForward.enabled = true
+                //skipBackward.enabled = true
                 rotateLeft.enabled = true
                 rotateRight.enabled = true
                 fileNameLabel.visible = true
@@ -141,174 +148,187 @@ QtObject {
             }
         }
 
-        ColumnLayout {
-            // Setting the size and position of the layout
-            width: { parent.width - 60 }
-            height: { parent.height - 60}
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
+        Item {
+            anchors.fill: parent
+        
+            ColumnLayout {
+                // Setting the size and position of the layout
+                width: { parent.width - 60 }
+                height: { parent.height - 60}
 
-            FilenameLabel {
-                id: fileNameLabel
-            }
-            
-            Image {
-                id: displayedImage
-                property var rotationAngle: 0
-
-                source: "../assets/default_image.png"
-                fillMode: Image.PreserveAspectFit
-                Layout.fillWidth: true; Layout.fillHeight: true
-                Layout.topMargin: 5
-                Layout.leftMargin: 55
-                Layout.bottomMargin: 20
-                
-                // By centering the image in the center
-                // we can rotate it easily
-                anchors.centerIn: parent
-                transform: Rotation { origin.x: displayedImage.width / 2; origin.y: displayedImage.height / 2; angle: displayedImage.rotationAngle}
-            }
-    		
-            RowLayout {
-		    	spacing: 30
+                anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
 
-                // Spacer item
-                Item {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+                // Label containing the filename
+                FilenameLabel {
+                    id: fileNameLabel
                 }
 
-                GenericCommandButton {
-                    id: skipBackward
+                Image {
+                    id: displayedImage
+                    property var rotationAngle: 0
 
-                    Layout.preferredWidth: 30
-                    Layout.topMargin: 50
-                    Layout.leftMargin: 45
+                    source: "../assets/default_image.png"
+                    fillMode: Image.PreserveAspectFit
+
+                    //Layout.fillWidth: true; Layout.fillHeight: true
+                    Layout.preferredWidth: parent.width - 50
+                    Layout.preferredHeight: parent.height - 120
+
+                    Layout.topMargin: 5
+                    Layout.leftMargin: 55
                     Layout.bottomMargin: 20
 
-                    background: CommandButtonRect {
-                        id: skipBackwardRect
+                    // By centering the image in the center
+                    // we can rotate it easily
+                    anchors.centerIn: parent
 
-                        CommandButtonImage {
-                            id: skipBackwardImage
-                            source: "../assets/skip_backward_disabled.png"
-                        }
-                    }
+                    // The rotation state is managed directly via qml
+                    transform: Rotation { origin.x: displayedImage.width / 2; origin.y: displayedImage.height / 2; angle: displayedImage.rotationAngle}
                 }
 
-                GenericCommandButton {
-                    id: rotateLeft
-                    property var rotated: 0
+                // Layout containing image command buttons
+                RowLayout {
+		        	spacing: 30
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
 
-                    Layout.topMargin: 50
-                    Layout.preferredWidth: 30
-                    Layout.bottomMargin: 20
+                    // Spacer item
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
 
-                    background: CommandButtonRect {
-                        id: rotateLeftRect
+                    GenericCommandButton {
+                        id: skipBackward
 
-                        CommandButtonImage {
-                            id: rotateLeftImage
-                            source: "../assets/rotate_left_disabled.png"
+                        Layout.preferredWidth: 30
+                        Layout.topMargin: 50
+                        Layout.leftMargin: 45
+                        Layout.bottomMargin: 20
+
+                        background: CommandButtonRect {
+                            id: skipBackwardRect
+
+                            CommandButtonImage {
+                                id: skipBackwardImage
+                                source: "../assets/skip_backward_disabled.png"
+                            }
                         }
                     }
 
-                    onClicked: {
-                        // Handling the image rotation, considering the right rotate
-                        // button state
-                        if (rotated == 0 && rotateRight.rotated == 0) {
-                            displayedImage.width = displayedImage.height
-                            rotated = 1
-                        }
-                        else if (rotated == 0 && rotateRight.rotated == 1) {
-                            displayedImage.width = parent.width
-                            rotateRight.rotated = 0
-                            rotated = 0
-                        }
-                        else if (rotated == 1 && rotateRight.rotated == 1) {
-                            displayedImage.width = displayedImage.height
-                            rotateRight.rotated = 0
-                            rotated = 0 
-                        }
-                        else {
-                            displayedImage.width = parent.width
-                            rotated = 0
-                        }
-                        // Setting the angle
-                        displayedImage.rotationAngle = displayedImage.rotationAngle - 90
-                    }
-                }
+                    GenericCommandButton {
+                        id: rotateLeft
+                        property var rotated: 0
 
-                GenericCommandButton {
-                    id: rotateRight
-                    property var rotated: 0
+                        Layout.topMargin: 50
+                        Layout.preferredWidth: 30
+                        Layout.bottomMargin: 20
 
-                    Layout.topMargin: 50
-                    Layout.preferredWidth: 30
-                    Layout.bottomMargin: 20
-                    
-                    background: CommandButtonRect {
-                        id: rotateRightRect
+                        background: CommandButtonRect {
+                            id: rotateLeftRect
 
-                        CommandButtonImage {
-                            id: rotateRightImage
-                            source: "../assets/rotate_right_disabled.png"
+                            CommandButtonImage {
+                                id: rotateLeftImage
+                                source: "../assets/rotate_left_disabled.png"
+                            }
                         }
-                    }
 
-                    onClicked: {
-                        // Handling the image rotation, considering the left rotate
-                        // button state
-                        if (rotated == 0 && rotateLeft.rotated == 0) {
-                            displayedImage.width = displayedImage.height
-                            rotated = 1
-                        }
-                        else if (rotated == 0 && rotateLeft.rotated == 1) {
-                            displayedImage.width = parent.width
-                            rotateLeft.rotated = 0
-                            rotated = 0
-                        }
-                        else if (rotated == 1 && rotateLeft.rotated == 1) {
-                            displayedImage.width = displayedImage.height
-                            rotateLeft.rotated = 0
-                            rotated = 0 
-                        }
-                        else {
-                            displayedImage.width = parent.width
-                            rotated = 0
-                        }
-                        // Setting the angle
-                        displayedImage.rotationAngle = displayedImage.rotationAngle + 90
-                    }
-                }
-
-                GenericCommandButton {
-                    id: skipForward
-
-                    Layout.preferredWidth: 30
-                    Layout.topMargin: 50
-                    Layout.rightMargin: 45
-                    Layout.bottomMargin: 20
-
-                    background: CommandButtonRect {
-                        id: skipForwardRect
-
-                        CommandButtonImage {
-                            id: skipForwardImage
-                            source: "../assets/skip_forward_disabled.png"
+                        onClicked: {
+                            // Handling the image rotation, evaluating the right rotate
+                            // button state
+                            if (rotated == 0 && rotateRight.rotated == 0) {
+                                displayedImage.width = displayedImage.height
+                                rotated = 1
+                            }
+                            else if (rotated == 0 && rotateRight.rotated == 1) {
+                                displayedImage.width = parent.width
+                                rotateRight.rotated = 0
+                                rotated = 0
+                            }
+                            else if (rotated == 1 && rotateRight.rotated == 1) {
+                                displayedImage.width = displayedImage.height
+                                rotateRight.rotated = 0
+                                rotated = 0 
+                            }
+                            else {
+                                displayedImage.width = parent.width
+                                rotated = 0
+                            }
+                            // Setting the angle
+                            displayedImage.rotationAngle = displayedImage.rotationAngle - 90
                         }
                     }
-                }
 
-                // Spacer item
-                Item {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    GenericCommandButton {
+                        id: rotateRight
+                        property var rotated: 0
+
+                        Layout.topMargin: 50
+                        Layout.preferredWidth: 30
+                        Layout.bottomMargin: 20
+
+                        background: CommandButtonRect {
+                            id: rotateRightRect
+
+                            CommandButtonImage {
+                                id: rotateRightImage
+                                source: "../assets/rotate_right_disabled.png"
+                            }
+                        }
+
+                        onClicked: {
+                            // Handling the image rotation, evaluating the left rotate
+                            // button state
+                            if (rotated == 0 && rotateLeft.rotated == 0) {
+                                displayedImage.width = displayedImage.height
+                                rotated = 1
+                            }
+                            else if (rotated == 0 && rotateLeft.rotated == 1) {
+                                displayedImage.width = parent.width
+                                rotateLeft.rotated = 0
+                                rotated = 0
+                            }
+                            else if (rotated == 1 && rotateLeft.rotated == 1) {
+                                displayedImage.width = displayedImage.height
+                                rotateLeft.rotated = 0
+                                rotated = 0 
+                            }
+                            else {
+                                displayedImage.width = parent.width
+                                rotated = 0
+                            }
+                            // Setting the angle
+                            displayedImage.rotationAngle = displayedImage.rotationAngle + 90
+                        }
+                    }
+
+                    GenericCommandButton {
+                        id: skipForward
+
+                        Layout.preferredWidth: 30
+                        Layout.topMargin: 50
+                        Layout.rightMargin: 45
+                        Layout.bottomMargin: 20
+
+                        background: CommandButtonRect {
+                            id: skipForwardRect
+
+                            CommandButtonImage {
+                                id: skipForwardImage
+                                source: "../assets/skip_forward_disabled.png"
+                            }
+                        }
+                    }
+
+                    // Spacer item
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
                 }
     		}
         }
@@ -318,16 +338,16 @@ QtObject {
     // selected image
     property var testWindow: ApplicationWindow {
         id: exifWindow
-        width: 300; height: 400
-        minimumWidth: 200
-        minimumHeight: 400
+        width: 600; height: 400
+        minimumWidth: 400
+        minimumHeight: 300
         visible: false; title: "Exif Data"
-	    Material.theme: Material.Dark
         color: "#f7f7f7"
+        // TODO: dialog or window?
         flags: Qt.Dialog
 
-         header: Label {
-            text: "Exif Data"
+        header: Label {
+            text: "Name"
             font.pointSize: 10
             topPadding: 10
             bottomPadding: 10
@@ -337,37 +357,59 @@ QtObject {
                 color: "#8fbccc"
                 Layout.fillWidth: true; Layout.fillHeight: true
             }            
-         }
+
+            Label {
+                anchors.right: parent.right
+                text: "Value"
+                font.pointSize: 10
+                topPadding: 10
+                bottomPadding: 10
+                rightPadding: 15
+                color: "white"
+            }
+        }
 
         ListView {
-        id: listView
-        anchors.fill: parent
-        model: listModel
-        spacing: -1
-        delegate: Rectangle {
-            width: listView.width
-            height: listView.height / 6
-            border.width: 1
-            border.color: "#8c8c8c"
+            id: exifView
+            anchors.fill: parent
+            model: exifViewHandler.exif
+            // This negative spacing is used to manage
+            // the overlapping border of rectangles
+            spacing: -1
+            delegate: Rectangle {
+                id: delegateRect
 
-            Text {
-                text: "Hour: " + hour
-                anchors.centerIn: parent
-            }
-        }
+                width: exifView.width
+                height: exifView.height / 6
+                border.width: 1
+                border.color: "#8c8c8c"
 
-        ScrollBar.vertical: ScrollBar {}
-        }
+                RowLayout {
+                    spacing: 20
+                    anchors.left: parent.left
+                    anchors.right: parent.right
 
-        ListModel {
-            id: listModel
+                    Label {
+                        text: name
+                        Layout.topMargin: delegateRect.height / 2.5
+                        Layout.leftMargin: 15
+                    }
 
-            Component.onCompleted: {
-                for (var i = 0; i < 24; i++) {
-                    var object = {hour: i};
-                    append(object);
+                    // Spacer item
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
+
+                    Label {
+                        text: value
+                        Layout.topMargin: delegateRect.height / 2.5
+                        Layout.rightMargin: 15
+                    }
                 }
             }
+
+            ScrollBar.vertical: ScrollBar {}
         }
     }
 }
