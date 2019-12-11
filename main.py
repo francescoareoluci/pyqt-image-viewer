@@ -1,68 +1,24 @@
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import qmlRegisterType, QQmlListProperty, QQmlComponent, QQmlEngine, QQmlApplicationEngine
-from PyQt5.QtCore import QUrl, QObject, pyqtSignal, pyqtSlot, pyqtProperty, QCoreApplication
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, pyqtProperty, QCoreApplication
 from PyQt5.QtQuick import QQuickView
 from ImageHandler import ImageHandler
-
-class ExifData(QObject):
-
-    nameChanged = pyqtSignal()
-    valueChanged = pyqtSignal()
-
-    def __init__(self, name='', *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._name = ""
-        self._value = ""
-
-    @pyqtProperty('QString', notify=nameChanged)
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, newName):
-        if newName != self._name:
-            self._name = newName
-
-    @pyqtProperty('QString', notify=valueChanged)
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, newValue):
-        if newValue != self._value:
-            self._value = newValue
-
-class ExifViewHandler(QObject):
-
-    exifChanged = pyqtSignal()
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        self._exif = []
-
-    @pyqtProperty(QQmlListProperty, notify=exifChanged)
-    def exif(self):
-        return QQmlListProperty(ExifData, self, self._exif)
-
-    @exif.setter
-    def exif(self, newExif):
-        if newExif != self._exif:
-            self._exif = newExif
-            self.exifChanged.emit()
+from ExifViewHandler import ExifViewHandler, ExifEntry
 
 
-
+## Callback to manage the exif data availability.
+## This will update ExifViewHandler, that will
+## signal the qml to update the list model
 def onExifDataReady():
     data = imageHandler.getExifData()
     path = imageHandler.getImagePath()
 
     exif = []
     for key in data:
-        ed = ExifData()
-        ed.name = str(key)
-        ed.value = str(data[key])
-        exif.append(ed)
+        exifEntry = ExifEntry()
+        exifEntry.name = str(key)
+        exifEntry.value = str(data[key])
+        exif.append(exifEntry)
 
     for d in exif:
         print(d.name)

@@ -23,10 +23,12 @@ class ImageHandler(QObject):
         self._observablePath.observe(self._onImageCallback)
 
 
+    ## Public Getter
     def getImagePath(self):
         return self._observablePath.imagePath
 
 
+    ## Public Getter
     def getExifData(self):
         return self._observableExifData.exif
 
@@ -37,7 +39,7 @@ class ImageHandler(QObject):
         ## Open image file for reading
         f = open(imagePath, 'rb')
 
-        ## Return Exif tags
+        ## Process file to get Exif data
         tags = exifread.process_file(f)
         print(tags)
 
@@ -62,13 +64,13 @@ class ImageHandler(QObject):
     ## Callback called whenever the exif data are updated
     def _onExifDataCallback(self, data):
         
-        if not data:
-            ## Data dict is empty
-            print('Empty exif values')
-            return
-
-        #for k in data.keys():
-        #    print(k, data[k])
+        ## TODO: To be removed, otherwise
+        ## list model will not be updated if selected
+        ## image not contains exif data
+        #if not data:
+        #    ## Data dict is empty
+        #    print('Empty exif values')
+        #    return
 
         self.exifDataReady.emit()
 
