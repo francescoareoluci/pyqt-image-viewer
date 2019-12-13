@@ -54,3 +54,11 @@ class ExifViewHandler(QObject):
         if newExif != self._exif:
             self._exif = newExif
             self.exifChanged.emit()
+
+    def handleGuiButton(self, button):
+        if self._exif:
+            button.setProperty("enabled", 'true')
+            button.setProperty("visible", 'true')
+        else:
+            button.setProperty("enabled", 'false')
+            button.setProperty("visible", 'false')

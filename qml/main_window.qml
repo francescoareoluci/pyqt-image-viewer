@@ -16,14 +16,14 @@ QtObject {
         minimumWidth: 600
         minimumHeight: 400
         visible: true; title: "Image Viewer"
-        //color: "#f7f7f7"
         FontLoader { id: webFont; source: "../assets/Lato-Regular.ttf" }
 
         // Setting the mainWindow background image
         background: BorderImage { 
+                z: -3
                 horizontalTileMode: BorderImage.Repeat
                 verticalTileMode: BorderImage.Repeat
-                source: "../assets/silver_scales.png"
+                source: "../assets/cream_pixels.png"
         }
 
         onClosing: {
@@ -45,9 +45,22 @@ QtObject {
             color: "white"
 
             background: Rectangle {
+                id: headerRect
                 color: "#8fbccc"
                 Layout.fillWidth: true; Layout.fillHeight: true
                 //width: parent.width
+                
+                // TODO: move out
+                DropShadow {
+                    anchors.fill: parent
+                    horizontalOffset: 0
+                    verticalOffset: 1
+                    z: -1
+                    radius: 5.0
+                    samples: 17
+                    color: "#80000000"
+                    source: parent
+                }
             }            
 
             RowLayout {
@@ -55,6 +68,7 @@ QtObject {
             
                 Button {
                     id: exifButton
+                    objectName: 'exifButton'
                     // TODO: how to set font color without this trick?
                     text: "<font color=\"#ffffff\"><u>View EXIF data</u></font>"
                     enabled: false
@@ -77,7 +91,7 @@ QtObject {
                 }
 
                 Button {
-                    id: buttonImage
+                    id: imageButton
                     // TODO: how to set font color without this trick?
                     text: "<font color=\"#8fbccc\">Choose an image</font>"
                     padding: 10
@@ -85,7 +99,27 @@ QtObject {
                     font.pointSize: 10
                     font.family: webFont.name
                     onClicked: {
-                        fileDialog.visible = true
+                        imageFileDialog.visible = true
+                    }
+                    Layout.topMargin: 10
+                    Layout.rightMargin: 5
+                    
+                    background: Rectangle {
+                        radius: 5
+                        color: "white"
+                    }
+                }
+
+                Button {
+                    id: folderButton
+                    // TODO: how to set font color without this trick?
+                    text: "<font color=\"#8fbccc\">Select a folder</font>"
+                    padding: 10
+                    width: 170
+                    font.pointSize: 10
+                    font.family: webFont.name
+                    onClicked: {
+                        folderFileDialog.visible = true
                     }
                     Layout.topMargin: 10
                     Layout.rightMargin: 30
@@ -95,30 +129,27 @@ QtObject {
                         color: "white"
                     }
                 }
-
             }
         }
 
         // File dialog used to select an image
         ImageSelector {
-            id: fileDialog
-            objectName: "fileDialog"
+            id: imageFileDialog
+            objectName: "imageFileDialog"
             signal imageSelected(string path)
 
             // Handle GUI update and emit signal for our controller
             onAccepted: {
-                console.log("File selected: " + fileDialog.fileUrls)
+                console.log("Image selected: " + imageFileDialog.fileUrls)
 
                 // Cleaning the file url
-                var path = fileDialog.fileUrl.toString();
+                var path = imageFileDialog.fileUrl.toString();
                 path = path.replace(/^(file:\/{3})/,"/");
                 var cleanPath = decodeURIComponent(path);
 
                 // Emit signal
                 imageSelected(cleanPath)
 
-                exifButton.enabled = true
-                exifButton.visible = true
                 //skipForward.enabled = true
                 //skipBackward.enabled = true
                 rotateLeft.enabled = true
@@ -135,7 +166,7 @@ QtObject {
                 //skipForwardRect.color = "#8fbccc"
                 //skipForwardImage.source = "../assets/skip_forward.png"
 
-                fileNameLabel.text = '<b>Image path:</b> ' + cleanPath
+                //fileNameLabel.text = '<b>Image path:</b> ' + cleanPath
 
                 // Resetting the state of right and left rotate buttons
                 rotateLeft.rotated = 0
@@ -144,7 +175,54 @@ QtObject {
                 displayedImage.rotationAngle = 0
 
                 // Setting the image source
-                displayedImage.source = fileDialog.fileUrl
+                //displayedImage.source = fileDialog.fileUrl
+            }
+        }
+
+        // File dialog used to select an image
+        FolderSelector {
+            id: folderFileDialog
+            objectName: "folderFileDialog"
+            signal folderSelected(string path)
+
+            // Handle GUI update and emit signal for our controller
+            onAccepted: {
+                console.log("Folder selected: " + folderFileDialog.fileUrls)
+
+                // Cleaning the file url
+                var path = folderFileDialog.fileUrl.toString();
+                path = path.replace(/^(file:\/{3})/,"/");
+                var cleanPath = decodeURIComponent(path);
+
+                // Emit signal
+                folderSelected(cleanPath)
+
+                //skipForward.enabled = true
+                //skipBackward.enabled = true
+                rotateLeft.enabled = true
+                rotateRight.enabled = true
+                fileNameLabel.visible = true
+
+                rotateLeftRect.color = "#8fbccc"
+                rotateLeftImage.source = "../assets/rotate_left.png"
+                rotateRightRect.color = "#8fbccc"
+                rotateRightImage.source = "../assets/rotate_right.png"
+                // TODO: handle folder selection
+                //skipBackwardRect.color = "#8fbccc"
+                //skipBackwardImage.source = "../assets/skip_backward.png"
+                //skipForwardRect.color = "#8fbccc"
+                //skipForwardImage.source = "../assets/skip_forward.png"
+
+                //fileNameLabel.text = '<b>Image path:</b> ' + cleanPath
+
+                // Resetting the state of right and left rotate buttons
+                rotateLeft.rotated = 0
+                rotateRight.rotated = 0
+                // Resetting the rotation angle
+                displayedImage.rotationAngle = 0
+
+                // Setting the image source
+                //displayedImage.source = fileDialog.fileUrl
             }
         }
 
@@ -164,10 +242,13 @@ QtObject {
                 // Label containing the filename
                 FilenameLabel {
                     id: fileNameLabel
+                    objectName: 'fileNameLabel'
+                    z: -2
                 }
 
                 Image {
                     id: displayedImage
+                    objectName: 'displayedImage'
                     property var rotationAngle: 0
 
                     source: "../assets/default_image.png"
@@ -178,7 +259,6 @@ QtObject {
                     Layout.preferredHeight: parent.height - 120
 
                     Layout.topMargin: 5
-                    Layout.leftMargin: 55
                     Layout.bottomMargin: 20
 
                     // By centering the image in the center
@@ -202,8 +282,30 @@ QtObject {
                         Layout.fillHeight: true
                     }
 
+                    DropShadow {
+                        anchors.fill: skipBackward
+                        horizontalOffset: 2
+                        verticalOffset: 2
+                        radius: 5.0
+                        samples: 17
+                        color: "#80000000"
+                        source: skipBackward
+                    }
+
+                    DropShadow {
+                        anchors.fill: rotateLeft
+                        horizontalOffset: 2
+                        verticalOffset: 2
+                        radius: 5.0
+                        samples: 17
+                        color: "#80000000"
+                        source: rotateLeft
+                    }
+
                     GenericCommandButton {
                         id: skipBackward
+                        objectName: 'skipBackward'
+                        signal previousButtonPressed()
 
                         Layout.preferredWidth: 30
                         Layout.topMargin: 50
@@ -212,11 +314,23 @@ QtObject {
 
                         background: CommandButtonRect {
                             id: skipBackwardRect
+                            objectName: 'skipBackwardRect'
 
                             CommandButtonImage {
                                 id: skipBackwardImage
+                                objectName: 'skipBackwardImage'
                                 source: "../assets/skip_backward_disabled.png"
                             }
+                        }
+
+                        onClicked: {
+                            previousButtonPressed()
+                            
+                            // Resetting the state of right and left rotate buttons
+                            rotateLeft.rotated = 0
+                            rotateRight.rotated = 0
+                            // Resetting the rotation angle
+                            displayedImage.rotationAngle = 0
                         }
                     }
 
@@ -308,6 +422,8 @@ QtObject {
 
                     GenericCommandButton {
                         id: skipForward
+                        objectName: 'skipForward'
+                        signal nextButtonPressed()
 
                         Layout.preferredWidth: 30
                         Layout.topMargin: 50
@@ -316,11 +432,23 @@ QtObject {
 
                         background: CommandButtonRect {
                             id: skipForwardRect
+                            objectName: 'skipForwardRect'
 
                             CommandButtonImage {
                                 id: skipForwardImage
+                                objectName: 'skipForwardImage'
                                 source: "../assets/skip_forward_disabled.png"
                             }
+                        }
+
+                        onClicked: {
+                            nextButtonPressed()
+                            
+                            // Resetting the state of right and left rotate buttons
+                            rotateLeft.rotated = 0
+                            rotateRight.rotated = 0
+                            // Resetting the rotation angle
+                            displayedImage.rotationAngle = 0
                         }
                     }
 
@@ -328,6 +456,26 @@ QtObject {
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                    }
+
+                    DropShadow {
+                        anchors.fill: skipForward
+                        horizontalOffset: 2
+                        verticalOffset: 2
+                        radius: 5.0
+                        samples: 17
+                        color: "#80000000"
+                        source: skipForward
+                    }
+
+                    DropShadow {
+                        anchors.fill: rotateRight
+                        horizontalOffset: 2
+                        verticalOffset: 2
+                        radius: 5.0
+                        samples: 17
+                        color: "#80000000"
+                        source: rotateRight
                     }
                 }
     		}
@@ -348,7 +496,7 @@ QtObject {
 
         header: Label {
             text: "Name"
-            font.pointSize: 10
+            font.pointSize: 11
             topPadding: 10
             bottomPadding: 10
             leftPadding: 15
@@ -361,7 +509,7 @@ QtObject {
             Label {
                 anchors.right: parent.right
                 text: "Value"
-                font.pointSize: 10
+                font.pointSize: 11
                 topPadding: 10
                 bottomPadding: 10
                 rightPadding: 15
@@ -382,7 +530,7 @@ QtObject {
                 width: exifView.width
                 height: exifView.height / 6
                 border.width: 1
-                border.color: "#8c8c8c"
+                border.color: '#d9d9d9'
 
                 RowLayout {
                     spacing: 20

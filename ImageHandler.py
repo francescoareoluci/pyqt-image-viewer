@@ -1,4 +1,5 @@
 import os
+import re
 import exifread
 from PyQt5.QtCore import QObject, pyqtSignal
 from ExifDataObservable import ObservableExifData
@@ -7,14 +8,24 @@ from ImagePathObservable import ObservableImagePath
 
 class ImageHandler(QObject):
 
-    exifDataReady = pyqtSignal()
+    exifDataReady           = pyqtSignal()
+    enablePreviousButton    = pyqtSignal()
+    enableNextButton        = pyqtSignal()
+    disablePreviousButton   = pyqtSignal()
+    disableNextButton       = pyqtSignal()
+    imageNotFound           = pyqtSignal()
 
     def __init__(self):
         super().__init__()
 
+        ## State variables
+        self._imageIndex = 0
+        self._imageCount = 0
+        self._images = []
+
         ## Setting the observables, these will be 
         ## the image path of the actual image
-        ## and the relative exif data
+        ## and its exif data
         self._observableExifData = ObservableExifData()
         self._observablePath = ObservableImagePath()
 
@@ -33,7 +44,13 @@ class ImageHandler(QObject):
         return self._observableExifData.exif
 
 
-    ## Extract exif data from image
+    def resetState(self):
+        self._images.clear()
+        self._imageCount = 0 
+        self._imageIndex = 0
+
+
+    ## Extract exif data from displayed image
     def _getExifData(self, imagePath):
 
         ## Open image file for reading
@@ -41,7 +58,7 @@ class ImageHandler(QObject):
 
         ## Process file to get Exif data
         tags = exifread.process_file(f)
-        print(tags)
+        #print(tags)
 
         exifData = {}
         for tag in tags.keys():
@@ -52,14 +69,75 @@ class ImageHandler(QObject):
         return exifData
 
 
-    ## Slot for signal coming from qml FileSelector 
+    ## Slot for image selected signal coming from qml FileSelector 
     def onImagePathUpdated(self, path):
-        
-        ## If the path is valid update the observable
-        if os.path.isfile(path):
-            ## Update observable
-            self._observablePath.imagePath = path
+        print(path)
+        self.resetState()
 
+        if '.jpg' in path:
+            ## Selected an image
+            self._imageCount = 1
+            self._images.append(path)
+
+            ## Disable next and previous buttons
+            self.disableNextButton.emit()
+            self.disablePreviousButton.emit()
+
+            ## Update observable
+            self._observablePath.imagePath = self._images[0]
+        else:
+            print('Format file not supported')
+
+
+    ## Slot for folder selected signal coming from qml FileSelector 
+    def onFolderPathUpdated(self, path):
+        print(path)
+        self.resetState()
+
+        fileList = os.listdir(path)
+        for file in fileList:
+            if '.jpg' in file:
+                self._images.append(path + '/' + file)
+                self._imageCount += 1
+        
+        ## Manage buttons
+        if self._imageCount != 0:
+            if self._imageCount == 1:
+                self.disablePreviousButton.emit()
+                self.disableNextButton.emit()
+            else:
+                self.disablePreviousButton.emit()
+                self.enableNextButton.emit()
+            
+            ## Update observable
+            print(self._images[0])
+            self._observablePath.imagePath = self._images[0]
+        else:
+            self.imageNotFound.emit()
+
+
+    def onPreviousButtonClicked(self):
+        if self._imageIndex == 0:
+            return
+
+        self._imageIndex -= 1
+        self._observablePath.imagePath = self._images[self._imageIndex]
+        if self._imageIndex == 0:
+            self.disablePreviousButton.emit()
+        else:
+            self.enableNextButton.emit()
+
+    def onNextButtonClicked(self):
+        if self._imageIndex == self._imageCount - 1:
+            return
+
+        self._imageIndex += 1
+        self._observablePath.imagePath = self._images[self._imageIndex]
+        if self._imageIndex >= self._imageCount - 1:
+            self.disableNextButton.emit()
+            
+        if self._imageIndex == 1 and self._imageCount != 1:
+            self.enablePreviousButton.emit()
 
     ## Callback called whenever the exif data are updated
     def _onExifDataCallback(self, data):
