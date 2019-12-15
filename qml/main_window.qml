@@ -150,32 +150,11 @@ QtObject {
                 // Emit signal
                 imageSelected(cleanPath)
 
-                //skipForward.enabled = true
-                //skipBackward.enabled = true
-                rotateLeft.enabled = true
-                rotateRight.enabled = true
-                fileNameLabel.visible = true
-
-                rotateLeftRect.color = "#8fbccc"
-                rotateLeftImage.source = "../assets/rotate_left.png"
-                rotateRightRect.color = "#8fbccc"
-                rotateRightImage.source = "../assets/rotate_right.png"
-                // TODO: handle folder selection
-                //skipBackwardRect.color = "#8fbccc"
-                //skipBackwardImage.source = "../assets/skip_backward.png"
-                //skipForwardRect.color = "#8fbccc"
-                //skipForwardImage.source = "../assets/skip_forward.png"
-
-                //fileNameLabel.text = '<b>Image path:</b> ' + cleanPath
-
                 // Resetting the state of right and left rotate buttons
                 rotateLeft.rotated = 0
                 rotateRight.rotated = 0
                 // Resetting the rotation angle
                 displayedImage.rotationAngle = 0
-
-                // Setting the image source
-                //displayedImage.source = fileDialog.fileUrl
             }
         }
 
@@ -197,32 +176,11 @@ QtObject {
                 // Emit signal
                 folderSelected(cleanPath)
 
-                //skipForward.enabled = true
-                //skipBackward.enabled = true
-                rotateLeft.enabled = true
-                rotateRight.enabled = true
-                fileNameLabel.visible = true
-
-                rotateLeftRect.color = "#8fbccc"
-                rotateLeftImage.source = "../assets/rotate_left.png"
-                rotateRightRect.color = "#8fbccc"
-                rotateRightImage.source = "../assets/rotate_right.png"
-                // TODO: handle folder selection
-                //skipBackwardRect.color = "#8fbccc"
-                //skipBackwardImage.source = "../assets/skip_backward.png"
-                //skipForwardRect.color = "#8fbccc"
-                //skipForwardImage.source = "../assets/skip_forward.png"
-
-                //fileNameLabel.text = '<b>Image path:</b> ' + cleanPath
-
                 // Resetting the state of right and left rotate buttons
                 rotateLeft.rotated = 0
                 rotateRight.rotated = 0
                 // Resetting the rotation angle
                 displayedImage.rotationAngle = 0
-
-                // Setting the image source
-                //displayedImage.source = fileDialog.fileUrl
             }
         }
 
@@ -260,11 +218,10 @@ QtObject {
 
                     Layout.topMargin: 5
                     Layout.bottomMargin: 20
-
+                    
                     // By centering the image in the center
                     // we can rotate it easily
                     anchors.centerIn: parent
-
                     // The rotation state is managed directly via qml
                     transform: Rotation { origin.x: displayedImage.width / 2; origin.y: displayedImage.height / 2; angle: displayedImage.rotationAngle}
                 }
@@ -336,6 +293,7 @@ QtObject {
 
                     GenericCommandButton {
                         id: rotateLeft
+                        objectName: 'rotateLeft'
                         property var rotated: 0
 
                         Layout.topMargin: 50
@@ -344,9 +302,11 @@ QtObject {
 
                         background: CommandButtonRect {
                             id: rotateLeftRect
+                            objectName: 'rotateLeftRect'
 
                             CommandButtonImage {
                                 id: rotateLeftImage
+                                objectName: 'rotateLeftImage'
                                 source: "../assets/rotate_left_disabled.png"
                             }
                         }
@@ -379,6 +339,7 @@ QtObject {
 
                     GenericCommandButton {
                         id: rotateRight
+                        objectName: 'rotateRight'
                         property var rotated: 0
 
                         Layout.topMargin: 50
@@ -387,9 +348,11 @@ QtObject {
 
                         background: CommandButtonRect {
                             id: rotateRightRect
+                            objectName: 'rotateRightRect'
 
                             CommandButtonImage {
                                 id: rotateRightImage
+                                objectName: 'rotateRightImage'
                                 source: "../assets/rotate_right_disabled.png"
                             }
                         }

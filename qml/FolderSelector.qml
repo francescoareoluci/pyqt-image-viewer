@@ -3,9 +3,8 @@ import QtQuick.Dialogs 1.0
 
 FileDialog {
     visible: false
-    title: "Please choose a jpg image"
+    title: "Please select a folder"
     folder: shortcuts.home
-    //nameFilters: [ "Image files (*.jpg)" ]
     selectFolder: true
     
     onRejected: {
