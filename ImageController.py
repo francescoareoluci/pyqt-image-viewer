@@ -49,6 +49,8 @@ class ImageController(QObject):
         self._imageCount = 0
         self._images = []
         self._cachedExifData = {}
+        self._latitude = 0
+        self._longitude = 0
 
         # Setting the observables, these will be 
         # the image path of the actual image
@@ -69,6 +71,18 @@ class ImageController(QObject):
     ## Public Getter
     def getExifData(self):
         return self._observableExifData.exif
+
+
+    def getDecimalCoords(self, coords):
+        decimal = coords[0].num + (coords[1].num / 60)
+        numSeconds = coords[2].num
+        denSeconds = coords[2].den
+        if denSeconds != 0:
+            seconds = numSeconds / denSeconds
+        else:
+            seconds = numSeconds
+        decimal += (seconds / 3600)
+        return decimal
 
 
     ## Method to reset the state of the handler
@@ -138,6 +152,17 @@ class ImageController(QObject):
             #if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
             if tag not in ('JPEGThumbnail'):
                 exifData.update({tag : tags[tag]})
+            
+            if tag == 'GPS GPSLatitude':
+                self._latitude = tags[tag]
+            elif tag == 'GPS GPSLongitude':
+                self._longitude = tags[tag]
+
+        self._latitude = self.getDecimalCoords(self._latitude.values)
+        self._longitude = self.getDecimalCoords(self._longitude.values)
+
+        print(self._latitude)
+        print(self._longitude)
 
         return exifData
 

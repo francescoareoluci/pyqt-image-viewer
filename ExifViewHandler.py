@@ -15,11 +15,17 @@ class ExifEntry(QObject):
 
     nameChanged = pyqtSignal()
     valueChanged = pyqtSignal()
+    isGeoTagChanged = pyqtSignal()
+    latitudeChanged = pyqtSignal()
+    longitudeChanged = pyqtSignal()
 
     def __init__(self, name='', *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._name = ""
         self._value = ""
+        self._isGeoTag = False
+        self._latitude = 0
+        self._longitude = 0
 
     @pyqtProperty('QString', notify=nameChanged)
     def name(self):
@@ -38,6 +44,33 @@ class ExifEntry(QObject):
     def value(self, newValue):
         if newValue != self._value:
             self._value = newValue
+
+    @pyqtProperty('bool', notify=isGeoTagChanged)
+    def isGeoTag(self):
+        return self._isGeoTag
+
+    @isGeoTag.setter
+    def isGeoTag(self, isGeoTag):
+        if isGeoTag != self._isGeoTag:
+            self._isGeoTag = isGeoTag
+
+    @pyqtProperty('float', notify=latitudeChanged)
+    def latitude(self):
+        return self._latitude
+
+    @latitude.setter
+    def latitude(self, newLat):
+        if newLat != self._latitude:
+            self._latitude = newLat
+
+    @pyqtProperty('float', notify=longitudeChanged)
+    def longitude(self):
+        return self._longitude
+
+    @longitude.setter
+    def longitude(self, newLon):
+        if newLon != self._longitude:
+            self._longitude = newLon
 
 
 ## This class will contain the list of Exif data
@@ -79,14 +112,37 @@ class ExifViewHandler(QObject):
             button.setProperty("visible", 'false')
 
 
+    def getDecimalCoords(self, coords):
+        decimal = coords[0].num + (coords[1].num / 60)
+        numSeconds = coords[2].num
+        denSeconds = coords[2].den
+        if denSeconds != 0:
+            seconds = numSeconds / denSeconds
+        else:
+            seconds = numSeconds
+        decimal += (seconds / 3600)
+        return decimal
+
+
     def onExifDataReady(self):
         data = self._imageController.getExifData()
 
         exif = []
         for key in data:
             exifEntry = ExifEntry()
+            isGeoTag = False
+            if 'GPSLongitude' in key or 'GPSLatitude' in key:
+                isGeoTag = True
+            if key == 'GPS GPSLatitude':
+                degLatitude = data[key].values
+                exifEntry.latitude = self.getDecimalCoords(degLatitude)
+            elif key == 'GPS GPSLongitude':
+                degLongitude = data[key].values
+                exifEntry.longitude = self.getDecimalCoords(degLongitude)
+
             exifEntry.name = str(key)
             exifEntry.value = str(data[key])
+            exifEntry.isGeoTag = isGeoTag
             exif.append(exifEntry)
 
         #for d in exif:

@@ -559,6 +559,15 @@ QtObject {
                         text: name
                         Layout.topMargin: delegateRect.height / 2.5
                         Layout.leftMargin: 15
+
+                        MouseArea {
+                            anchors.fill: parent
+                            visible: isGeoTag
+                            onClicked: { 
+                                //Qt.openUrlExternally('http://www.google.it')
+                                Qt.openUrlExternally('https://maps.google.com/?q='+latitude+','+longitude)
+                            }
+                        }
                     }
 
                     // Spacer item
