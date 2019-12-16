@@ -1,17 +1,43 @@
+"""ImageViewHandler module
+Author: Francesco Areoluci
+
+This module contain a class to handle the GUI view 
+regarding the image and its control buttons
+"""
 import os
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import QQmlEngine
 from PyQt5.QtCore import QObject
 
+
+## Image GUI view management class
 class ImageViewHandler:
+    """ Class used to handle the view changes in GUI
+    
+    This class is used to update the GUI (image and its controls).
+    It will use signals coming from ImageHandler module in order
+    to correctly update the GUI elements
+
+    Typical usage example:
+
+    imageViewHandler = ImageViewHandler(imageHandlerInstance)
+    someSignal.connect(imageViewHandler.someSlot)
+    """
 
     ## Constructor
-    def __init__(self, engine, imageHandler):
+    def __init__(self, win, imageHandler):
+        """ __init__
+
+        ImageViewHandler constructor.
+        Parameters: win: engine root object, 
+        imageHandler: instance of ImageHandler class
+        This constructor will get all the elements for the
+        engine root object that will need to be modified.
+        """
+
         self._imageHandler = imageHandler
 
-        ## Get the root window and fish out the buttons.
-        win = engine.rootObjects()[0]
-
+        ## Get GUI elements
         self._fileNameLabel       = win.findChild(QObject, 'fileNameLabel')
         self._displayedImage      = win.findChild(QObject, 'displayedImage')
         self._previousButton      = win.findChild(QObject, 'skipBackward')
@@ -27,10 +53,18 @@ class ImageViewHandler:
         self._rotateRightImage    = win.findChild(QObject, 'rotateRightImage')
         self._rotateLeftImage     = win.findChild(QObject, 'rotateLeftImage')
 
+        ## Current path
         self._pwd = os.getcwd()
 
 
+    ## Slot to be called whenever a folder is selected and no image
+    # has been found
     def imageFoundHandler(self):
+        """ imageFoundHandler
+
+        This handler will update the image source, set the 
+        image file name and enable left/right image rotate controls
+        """
         path = self._imageHandler.getImagePath()
         self._displayedImage.setProperty('source', 'file://' + path)
         self._fileNameLabel.setProperty('visible', 'true')
@@ -39,8 +73,17 @@ class ImageViewHandler:
         self.enableRotateRightImageHandler()
 
 
+    ## Slot to be called whenever a folder is selected and at least 
+    # an image has been found
     def imageNotFoundHandler(self):
-        print('No image in folder')
+        """ imageFoundHandler
+
+        This handler will be called whenever no image is found
+        on a selected folder. It will set a default image and
+        disables all the image controls
+        """
+
+        print('No images found in folder')
         self._fileNameLabel.setProperty('visible', 'true')
         self._fileNameLabel.setProperty('text', '<font color=\"#c23c2b\">No images found in folder</font>')
         self._displayedImage.setProperty('source', 'file://' + self._pwd + '/assets/default_image.png')
@@ -50,49 +93,65 @@ class ImageViewHandler:
         self.disableRotateRightImageHandler()
 
 
+    ## Private class used to handle GUI management
+    def _manageButton(self, enabled, button, buttonRect, buttonImage, imageName):
+        """ _manageButton
+
+        This method is used to handle the image controls update
+        (enable/disable)
+        """
+
+        imagePath = 'file://' + self._pwd + '/assets/' + imageName
+        backgroundColor = '#8fbccc' if enabled else '#c9bfbf'
+        
+        button.setProperty('enabled', enabled)
+        buttonRect.setProperty('color', backgroundColor) 
+        buttonImage.setProperty('source', imagePath)
+
+
+    ## Slot to be called whenever the next image
+    # control needs to be enabled
     def enableNextImageHandler(self):
-        self._nextButton.setProperty('enabled', 'true')
-        self._nextButtonRect.setProperty('color', '#8fbccc')
-        self._nextButtonImage.setProperty('source', 'file://' + self._pwd + '/assets/skip_forward.png')
+        self._manageButton(True, self._nextButton, self._nextButtonRect, self._nextButtonImage, 'skip_forward.png')
 
 
+    ## Slot to be called whenever the next image
+    # control needs to be disabled
     def disableNextImageHandler(self):
-        self._nextButton.setProperty('enabled', 'false')
-        self._nextButtonRect.setProperty('color', '#c9bfbf')
-        self._nextButtonImage.setProperty('source', 'file://' + self._pwd + '/assets/skip_forward_disabled.png')
+        self._manageButton(False, self._nextButton, self._nextButtonRect, self._nextButtonImage, 'skip_forward_disabled.png')
 
 
+    ## Slot to be called whenever the previous image
+    # control needs to be enabled
     def enablePreviousImageHandler(self):
-        self._previousButton.setProperty('enabled', 'true')
-        self._previousButtonRect.setProperty('color', '#8fbccc')
-        self._previousButtonImage.setProperty('source', 'file://' + self._pwd + '/assets/skip_backward.png')
+        self._manageButton(True, self._previousButton, self._previousButtonRect, self._previousButtonImage, 'skip_backward.png')
 
 
+    ## Slot to be called whenever the previous image
+    # control needs to be disabled
     def disablePreviousImageHandler(self):
-        self._previousButton.setProperty('enabled', 'false')
-        self._previousButtonRect.setProperty('color', '#c9bfbf')
-        self._previousButtonImage.setProperty('source', 'file://' + self._pwd + '/assets/skip_backward_disabled.png')
+        self._manageButton(False, self._previousButton, self._previousButtonRect, self._previousButtonImage, 'skip_backward_disabled.png')
 
 
+    ## Slot to be called whenever the left rotate
+    # control needs to be enabled
     def enableRotateLeftImageHandler(self):
-        self._rotateLeft.setProperty('enabled', 'true')
-        self._rotateLeftRect.setProperty('color', '#8fbccc')
-        self._rotateLeftImage.setProperty('source', 'file://' + self._pwd + '/assets/rotate_left.png')
+        self._manageButton(True, self._rotateLeft, self._rotateLeftRect, self._rotateLeftImage, 'rotate_left.png')
 
 
+    ## Slot to be called whenever the left rotate
+    # control needs to be disabled
     def disableRotateLeftImageHandler(self):
-        self._rotateLeft.setProperty('enabled', 'false')
-        self._rotateLeftRect.setProperty('color', '#c9bfbf')
-        self._rotateLeftImage.setProperty('source', 'file://' + self._pwd + '/assets/rotate_left_disabled.png')
+        self._manageButton(False, self._rotateLeft, self._rotateLeftRect, self._rotateLeftImage, 'rotate_left_disabled.png')
 
 
+    ## Slot to be called whenever the right rotate
+    # control needs to be enabled
     def enableRotateRightImageHandler(self):
-        self._rotateRight.setProperty('enabled', 'true')
-        self._rotateRightRect.setProperty('color', '#8fbccc')
-        self._rotateRightImage.setProperty('source', 'file://' + self._pwd + '/assets/rotate_right.png')
+        self._manageButton(True, self._rotateRight, self._rotateRightRect, self._rotateRightImage, 'rotate_right.png')
 
 
+    ## Slot to be called whenever the right rotate
+    # control needs to be disabled
     def disableRotateRightImageHandler(self):
-        self._rotateRight.setProperty('enabled', 'false')
-        self._rotateRightRect.setProperty('color', '#c9bfbf')
-        self._rotateRightImage.setProperty('source', 'file://' + self._pwd + '/assets/rotate_right_disabled.png')
+        self._manageButton(False, self._rotateRight, self._rotateRightRect, self._rotateRightImage, 'rotate_right_disabled.png')

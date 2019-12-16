@@ -1,3 +1,12 @@
+""" ImageViewer.py
+Author: Francesco Areoluci
+
+Main python module
+This module is the entry point of the application.
+It will instantiates the QApplication, connect some signals
+and launch the application.
+"""
+
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import qmlRegisterType, QQmlListProperty, QQmlComponent, QQmlEngine, QQmlApplicationEngine
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, pyqtProperty, QCoreApplication
@@ -7,62 +16,43 @@ from ExifViewHandler import ExifViewHandler, ExifEntry
 from ImageViewHandler import ImageViewHandler
 
 
-## Callback to manage the exif data availability.
-## This will update ExifViewHandler, that will
-## signal the qml to update the list model
-def onExifDataReady():
-    data = imageHandler.getExifData()
-
-    exif = []
-    for key in data:
-        exifEntry = ExifEntry()
-        exifEntry.name = str(key)
-        exifEntry.value = str(data[key])
-        exif.append(exifEntry)
-
-    #for d in exif:
-    #    print(d.name)
-    #    print(d.value)
-
-    exifViewHandler.exif = exif
-
-    ## Show or hide the exif button on the GUI
-    exifViewHandler.handleGuiButton(exifButton)
-
-
 if __name__ == '__main__':
 
-    ## Create a QApplication.
+    # Create a QApplication.
     app = QApplication([])
 
-    exifViewHandler = ExifViewHandler()
     imageHandler = ImageHandler()
+    exifViewHandler = ExifViewHandler(imageHandler)
 
     qmlRegisterType(ExifViewHandler, 'Example', 1, 0, 'ExifViewHandler')
 
     engine = QQmlApplicationEngine()
     engine.rootContext().setContextProperty('exifViewHandler', exifViewHandler)
     engine.load('./qml/main_window.qml')
-
-    ## Get the root window and fish out the buttons.
+    
+    # Get the root window
     win = engine.rootObjects()[0]
 
-    imageViewHandler = ImageViewHandler(engine, imageHandler)
-
+    # Get GUI elements
     folderSelector      = win.findChild(QObject, 'folderFileDialog')
     imageSelector       = win.findChild(QObject, 'imageFileDialog')
     exifButton          = win.findChild(QObject, 'exifButton')
     previousButton      = win.findChild(QObject, 'skipBackward')
     nextButton          = win.findChild(QObject, 'skipForward')
 
-    ## Connecting qml signals to our ImageHandler slots
+    # Create the image view handler
+    imageViewHandler = ImageViewHandler(win, imageHandler)
+    # Set the exif button to be handled in exif view handler
+    exifViewHandler.setExifButton(exifButton)
+
+    # Connecting qml signals to ImageHandler slots
     folderSelector.folderSelected.connect(imageHandler.onFolderPathUpdated)
     imageSelector.imageSelected.connect(imageHandler.onImagePathUpdated)
     previousButton.previousButtonPressed.connect(imageHandler.onPreviousImageRequested)
     nextButton.nextButtonPressed.connect(imageHandler.onNextImageRequested)
 
-    ## Connecting ImageHandler signals to our slots
-    imageHandler.exifDataReady.connect(onExifDataReady)
+    # Connecting ImageHandler signals to our slots
+    imageHandler.exifDataReady.connect(exifViewHandler.onExifDataReady)
     imageHandler.imageFound.connect(imageViewHandler.imageFoundHandler)
     imageHandler.imageNotFound.connect(imageViewHandler.imageNotFoundHandler)
     imageHandler.disablePreviousImage.connect(imageViewHandler.disablePreviousImageHandler)
@@ -70,5 +60,5 @@ if __name__ == '__main__':
     imageHandler.disableNextImage.connect(imageViewHandler.disableNextImageHandler)
     imageHandler.enableNextImage.connect(imageViewHandler.enableNextImageHandler)
 
-    ## Start the application
+    # Start the application
     app.exec_()

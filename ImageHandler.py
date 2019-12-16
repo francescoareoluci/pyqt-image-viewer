@@ -1,15 +1,15 @@
 """ImageHandler module
+Author: Francesco Areoluci
 
 This module contain a class to handle image state
 """
-
 import os
 import exifread
 from PyQt5.QtCore import QObject, pyqtSignal
-from ExifDataObservable import ObservableExifData
-from ImagePathObservable import ObservableImagePath
+from Observables import ObservableExifData, ObservableImagePath
 
 
+## Image state management class
 class ImageHandler(QObject):
     """ Class used to handle signal regarding image coming from qml
     
@@ -224,7 +224,8 @@ class ImageHandler(QObject):
         self._observablePath.imagePath = self._images[self._imageIndex]
         if self._imageIndex == 0:
             self.disablePreviousImage.emit()
-        else:
+        
+        if self._imageCount > 1:
             self.enableNextImage.emit()
 
 
@@ -248,5 +249,5 @@ class ImageHandler(QObject):
         if self._imageIndex >= self._imageCount - 1:
             self.disableNextImage.emit()
             
-        if self._imageIndex == 1 and self._imageCount != 1:
+        if self._imageIndex == 1 and self._imageCount > 1:
             self.enablePreviousImage.emit()

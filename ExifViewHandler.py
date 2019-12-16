@@ -1,10 +1,16 @@
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, pyqtProperty
+""" ExifViewHandler module
+Author: Francesco Areoluci
+
+This module contains classes to handle the GUI view
+regarding exif data visualization
+"""
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtProperty
 from PyQt5.QtQml import QQmlListProperty
 
 
 ## This class is used to store a single Exif entry
-## of the viewed image. This is used to populate the
-## qml list model
+# of the viewed image. This is used to populate the
+# qml list model
 class ExifEntry(QObject):
 
     nameChanged = pyqtSignal()
@@ -35,25 +41,34 @@ class ExifEntry(QObject):
 
 
 ## This class will contain the list of Exif data
-## read from viewed image. This list will be used to 
-## populate the qml list model
+# read from viewed image. This list will be used to 
+# populate the qml list model
 class ExifViewHandler(QObject):
 
     exifChanged = pyqtSignal()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, imageHandler):
+        super().__init__()
+
         self._exif = []
+        self._imageHandler = imageHandler
+
 
     @pyqtProperty(QQmlListProperty, notify=exifChanged)
     def exif(self):
         return QQmlListProperty(ExifEntry, self, self._exif)
+
 
     @exif.setter
     def exif(self, newExif):
         if newExif != self._exif:
             self._exif = newExif
             self.exifChanged.emit()
+
+
+    def setExifButton(self, exifButton):
+        self._exifButton = exifButton
+        
 
     def handleGuiButton(self, button):
         if self._exif:
@@ -62,3 +77,23 @@ class ExifViewHandler(QObject):
         else:
             button.setProperty("enabled", 'false')
             button.setProperty("visible", 'false')
+
+
+    def onExifDataReady(self):
+        data = self._imageHandler.getExifData()
+
+        exif = []
+        for key in data:
+            exifEntry = ExifEntry()
+            exifEntry.name = str(key)
+            exifEntry.value = str(data[key])
+            exif.append(exifEntry)
+
+        #for d in exif:
+        #    print(d.name)
+        #    print(d.value)
+
+        self.exif = exif
+
+        ## Show or hide the exif button on the GUI
+        self.handleGuiButton(self._exifButton)

@@ -51,16 +51,16 @@ QtObject {
                 //width: parent.width
                 
                 // TODO: move out
-                DropShadow {
-                    anchors.fill: parent
-                    horizontalOffset: 0
-                    verticalOffset: 1
-                    z: -1
-                    radius: 5.0
-                    samples: 17
-                    color: "#80000000"
-                    source: parent
-                }
+                //DropShadow {
+                //    anchors.fill: parent
+                //    horizontalOffset: 0
+                //    verticalOffset: 1
+                //    z: -1
+                //    radius: 5.0
+                //    samples: 17
+                //    color: "#80000000"
+                //    source: parent
+                //}
             }            
 
             RowLayout {
