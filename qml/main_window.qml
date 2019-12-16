@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.0
@@ -49,18 +49,6 @@ QtObject {
                 color: "#8fbccc"
                 Layout.fillWidth: true; Layout.fillHeight: true
                 //width: parent.width
-                
-                // TODO: move out
-                //DropShadow {
-                //    anchors.fill: parent
-                //    horizontalOffset: 0
-                //    verticalOffset: 1
-                //    z: -1
-                //    radius: 5.0
-                //    samples: 17
-                //    color: "#80000000"
-                //    source: parent
-                //}
             }            
 
             RowLayout {
@@ -98,15 +86,24 @@ QtObject {
                     width: 170
                     font.pointSize: 10
                     font.family: webFont.name
-                    onClicked: {
-                        imageFileDialog.visible = true
-                    }
                     Layout.topMargin: 10
                     Layout.rightMargin: 5
                     
                     background: Rectangle {
                         radius: 5
                         color: "white"
+                    }
+
+                    onClicked: {
+                        imageFileDialog.visible = true
+                    }
+
+                    // Ctrl+i hotkey binding
+                    Shortcut {
+                        sequence: "Ctrl+i"
+                        onActivated: {
+                            imageFileDialog.visible = true
+                        }
                     }
                 }
 
@@ -118,15 +115,24 @@ QtObject {
                     width: 170
                     font.pointSize: 10
                     font.family: webFont.name
-                    onClicked: {
-                        folderFileDialog.visible = true
-                    }
                     Layout.topMargin: 10
                     Layout.rightMargin: 30
                     
                     background: Rectangle {
                         radius: 5
                         color: "white"
+                    }
+
+                    onClicked: {
+                        folderFileDialog.visible = true
+                    }
+
+                    // Ctrl+f hotkey binding
+                    Shortcut {
+                        sequence: "Ctrl+f"
+                        onActivated: {
+                            folderFileDialog.visible = true
+                        }
                     }
                 }
             }
@@ -264,6 +270,16 @@ QtObject {
                         objectName: 'skipBackward'
                         signal previousButtonPressed()
 
+                        function handlePreviousImage() {
+                            previousButtonPressed()
+                            
+                            // Resetting the state of right and left rotate buttons
+                            rotateLeft.rotated = 0
+                            rotateRight.rotated = 0
+                            // Resetting the rotation angle
+                            displayedImage.rotationAngle = 0
+                        }
+
                         Layout.preferredWidth: 30
                         Layout.topMargin: 50
                         Layout.leftMargin: 45
@@ -281,13 +297,18 @@ QtObject {
                         }
 
                         onClicked: {
-                            previousButtonPressed()
-                            
-                            // Resetting the state of right and left rotate buttons
-                            rotateLeft.rotated = 0
-                            rotateRight.rotated = 0
-                            // Resetting the rotation angle
-                            displayedImage.rotationAngle = 0
+                            handlePreviousImage()
+                        }
+
+                        // Left arrow hotkey binding
+                        Shortcut {
+                            sequence: "left"
+                            onActivated: { 
+                                if (skipBackward.enabled == false) {
+                                    return                                
+                                }
+                                skipBackward.handlePreviousImage() 
+                            }
                         }
                     }
 
@@ -296,22 +317,7 @@ QtObject {
                         objectName: 'rotateLeft'
                         property var rotated: 0
 
-                        Layout.topMargin: 50
-                        Layout.preferredWidth: 30
-                        Layout.bottomMargin: 20
-
-                        background: CommandButtonRect {
-                            id: rotateLeftRect
-                            objectName: 'rotateLeftRect'
-
-                            CommandButtonImage {
-                                id: rotateLeftImage
-                                objectName: 'rotateLeftImage'
-                                source: "../assets/rotate_left_disabled.png"
-                            }
-                        }
-
-                        onClicked: {
+                        function handleLeftRotate() {
                             // Handling the image rotation, evaluating the right rotate
                             // button state
                             if (rotated == 0 && rotateRight.rotated == 0) {
@@ -335,6 +341,36 @@ QtObject {
                             // Setting the angle
                             displayedImage.rotationAngle = displayedImage.rotationAngle - 90
                         }
+
+                        Layout.topMargin: 50
+                        Layout.preferredWidth: 30
+                        Layout.bottomMargin: 20
+
+                        background: CommandButtonRect {
+                            id: rotateLeftRect
+                            objectName: 'rotateLeftRect'
+
+                            CommandButtonImage {
+                                id: rotateLeftImage
+                                objectName: 'rotateLeftImage'
+                                source: "../assets/rotate_left_disabled.png"
+                            }
+                        }
+
+                        onClicked: {
+                            handleLeftRotate()
+                        }
+
+                        // Ctrl+L hotkey binding
+                        Shortcut {
+                            sequence: "Ctrl+L"
+                            onActivated: {
+                                if (rotateLeft.enabled == false) {
+                                    return                                
+                                } 
+                                rotateLeft.handleLeftRotate() 
+                            }
+                        }
                     }
 
                     GenericCommandButton {
@@ -342,22 +378,7 @@ QtObject {
                         objectName: 'rotateRight'
                         property var rotated: 0
 
-                        Layout.topMargin: 50
-                        Layout.preferredWidth: 30
-                        Layout.bottomMargin: 20
-
-                        background: CommandButtonRect {
-                            id: rotateRightRect
-                            objectName: 'rotateRightRect'
-
-                            CommandButtonImage {
-                                id: rotateRightImage
-                                objectName: 'rotateRightImage'
-                                source: "../assets/rotate_right_disabled.png"
-                            }
-                        }
-
-                        onClicked: {
+                        function handleRightRotate() {
                             // Handling the image rotation, evaluating the left rotate
                             // button state
                             if (rotated == 0 && rotateLeft.rotated == 0) {
@@ -381,12 +402,56 @@ QtObject {
                             // Setting the angle
                             displayedImage.rotationAngle = displayedImage.rotationAngle + 90
                         }
+
+                        Layout.topMargin: 50
+                        Layout.preferredWidth: 30
+                        Layout.bottomMargin: 20
+
+                        background: CommandButtonRect {
+                            id: rotateRightRect
+                            objectName: 'rotateRightRect'
+
+                            CommandButtonImage {
+                                id: rotateRightImage
+                                objectName: 'rotateRightImage'
+                                source: "../assets/rotate_right_disabled.png"
+                            }
+                        }
+
+                        onClicked: {
+                            handleRightRotate()
+                        }
+
+                        // Ctrl+R hotkey binding
+                        Shortcut {
+                            sequence: "Ctrl+R"
+                            onActivated: {
+                                if (rotateRight.enabled == false) {
+                                    return                                
+                                } 
+                                rotateRight.handleRightRotate() 
+                            }
+                        }
                     }
 
                     GenericCommandButton {
                         id: skipForward
                         objectName: 'skipForward'
                         signal nextButtonPressed()
+
+                        function handleNextImage() {
+                            if (skipForward.enabled == 'false') {
+                                return                                
+                            }
+
+                            nextButtonPressed()
+                            
+                            // Resetting the state of right and left rotate buttons
+                            rotateLeft.rotated = 0
+                            rotateRight.rotated = 0
+                            // Resetting the rotation angle
+                            displayedImage.rotationAngle = 0
+                        }
 
                         Layout.preferredWidth: 30
                         Layout.topMargin: 50
@@ -405,13 +470,18 @@ QtObject {
                         }
 
                         onClicked: {
-                            nextButtonPressed()
-                            
-                            // Resetting the state of right and left rotate buttons
-                            rotateLeft.rotated = 0
-                            rotateRight.rotated = 0
-                            // Resetting the rotation angle
-                            displayedImage.rotationAngle = 0
+                            handleNextImage()
+                        }
+
+                        // Right arrow hotkey binding
+                        Shortcut {
+                            sequence: "right"
+                            onActivated: {
+                                if (skipForward.enabled == false) {
+                                    return                                
+                                } 
+                                skipForward.handleNextImage() 
+                            }
                         }
                     }
 
