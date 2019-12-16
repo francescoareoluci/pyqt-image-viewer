@@ -1,12 +1,11 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
-import QtQuick.Controls.Material 2.0
 import QtQuick.Dialogs 1.0
 import QtQuick.Window 2.1
 import QtGraphicalEffects 1.0
 
-import Example 1.0
+import ExifViewHandler 1.0
 
 QtObject {
 
@@ -157,8 +156,6 @@ QtObject {
 
             // Handle GUI update and emit signal for our controller
             onAccepted: {
-                console.log("Image selected: " + imageFileDialog.fileUrls)
-
                 // Cleaning the file url
                 var path = imageFileDialog.fileUrl.toString();
                 path = path.replace(/^(file:\/{3})/,"/");
@@ -183,8 +180,6 @@ QtObject {
 
             // Handle GUI update and emit signal for our controller
             onAccepted: {
-                console.log("Folder selected: " + folderFileDialog.fileUrls)
-
                 // Cleaning the file url
                 var path = folderFileDialog.fileUrl.toString();
                 path = path.replace(/^(file:\/{3})/,"/");
@@ -239,7 +234,7 @@ QtObject {
                     // By centering the image in the center
                     // we can rotate it easily
                     anchors.centerIn: parent
-                    // The rotation state is managed directly via qml
+                    // The rotation state is managed directly in qml
                     transform: Rotation { origin.x: displayedImage.width / 2; origin.y: displayedImage.height / 2; angle: displayedImage.rotationAngle}
                 }
 
@@ -256,23 +251,13 @@ QtObject {
                         Layout.fillHeight: true
                     }
 
-                    DropShadow {
+                    CommandButtonShadow {
                         anchors.fill: skipBackward
-                        horizontalOffset: 2
-                        verticalOffset: 2
-                        radius: 5.0
-                        samples: 17
-                        color: "#80000000"
                         source: skipBackward
                     }
 
-                    DropShadow {
+                    CommandButtonShadow {
                         anchors.fill: rotateLeft
-                        horizontalOffset: 2
-                        verticalOffset: 2
-                        radius: 5.0
-                        samples: 17
-                        color: "#80000000"
                         source: rotateLeft
                     }
 
@@ -502,23 +487,13 @@ QtObject {
                         Layout.fillHeight: true
                     }
 
-                    DropShadow {
+                    CommandButtonShadow {
                         anchors.fill: skipForward
-                        horizontalOffset: 2
-                        verticalOffset: 2
-                        radius: 5.0
-                        samples: 17
-                        color: "#80000000"
                         source: skipForward
                     }
 
-                    DropShadow {
+                    CommandButtonShadow {
                         anchors.fill: rotateRight
-                        horizontalOffset: 2
-                        verticalOffset: 2
-                        radius: 5.0
-                        samples: 17
-                        color: "#80000000"
                         source: rotateRight
                     }
                 }
@@ -535,7 +510,6 @@ QtObject {
         minimumHeight: 300
         visible: false; title: "Exif Data"
         color: "#f7f7f7"
-        // TODO: dialog or window?
         flags: Qt.Dialog
 
         header: Label {

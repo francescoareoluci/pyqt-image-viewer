@@ -24,7 +24,7 @@ if __name__ == '__main__':
     imageController = ImageController()
     exifViewHandler = ExifViewHandler(imageController)
 
-    qmlRegisterType(ExifViewHandler, 'Example', 1, 0, 'ExifViewHandler')
+    qmlRegisterType(ExifViewHandler, 'ExifViewHandler', 1, 0, 'ExifViewHandler')
 
     engine = QQmlApplicationEngine()
     engine.rootContext().setContextProperty('exifViewHandler', exifViewHandler)
