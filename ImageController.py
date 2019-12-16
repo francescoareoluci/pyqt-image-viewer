@@ -1,4 +1,4 @@
-"""ImageHandler module
+"""ImageController module
 Author: Francesco Areoluci
 
 This module contain a class to handle image state
@@ -10,7 +10,7 @@ from Observables import ObservableExifData, ObservableImagePath
 
 
 ## Image state management class
-class ImageHandler(QObject):
+class ImageController(QObject):
     """ Class used to handle signal regarding image coming from qml
     
     This class is used to manage all the image events that are coming
@@ -20,10 +20,10 @@ class ImageHandler(QObject):
 
     Typical usage example:
 
-    imageHandler = ImageHandler()
-    imageHandler.exifDataReady.connect(someSlot)
-    exif = imageHandler.getExifData()
-    imagePath = imageHandler.getImagePath()
+    imageController = ImageController()
+    imageController.exifDataReady.connect(someSlot)
+    exif = imageController.getExifData()
+    imagePath = imageController.getImagePath()
     """
 
     exifDataReady          = pyqtSignal()
@@ -38,7 +38,7 @@ class ImageHandler(QObject):
     def __init__(self):
         """ __init__
 
-        ImageHandler constructor. It set an initial state
+        ImageController constructor. It set an initial state
         for handling image visualization and instantiate
         observables to manage the image path and its exif data. 
         """

@@ -47,11 +47,11 @@ class ExifViewHandler(QObject):
 
     exifChanged = pyqtSignal()
 
-    def __init__(self, imageHandler):
+    def __init__(self, imageController):
         super().__init__()
 
         self._exif = []
-        self._imageHandler = imageHandler
+        self._imageController = imageController
 
 
     @pyqtProperty(QQmlListProperty, notify=exifChanged)
@@ -80,7 +80,7 @@ class ExifViewHandler(QObject):
 
 
     def onExifDataReady(self):
-        data = self._imageHandler.getExifData()
+        data = self._imageController.getExifData()
 
         exif = []
         for key in data:

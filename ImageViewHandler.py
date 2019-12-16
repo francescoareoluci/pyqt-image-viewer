@@ -25,17 +25,17 @@ class ImageViewHandler:
     """
 
     ## Constructor
-    def __init__(self, win, imageHandler):
+    def __init__(self, win, imageController):
         """ __init__
 
         ImageViewHandler constructor.
         Parameters: win: engine root object, 
-        imageHandler: instance of ImageHandler class
+        imageController: instance of imageController class
         This constructor will get all the elements for the
         engine root object that will need to be modified.
         """
 
-        self._imageHandler = imageHandler
+        self._imageController = imageController
 
         ## Get GUI elements
         self._fileNameLabel       = win.findChild(QObject, 'fileNameLabel')
@@ -65,7 +65,7 @@ class ImageViewHandler:
         This handler will update the image source, set the 
         image file name and enable left/right image rotate controls
         """
-        path = self._imageHandler.getImagePath()
+        path = self._imageController.getImagePath()
         self._displayedImage.setProperty('source', 'file://' + path)
         self._fileNameLabel.setProperty('visible', 'true')
         self._fileNameLabel.setProperty('text', '<b>Image path:</b>: ' + path)

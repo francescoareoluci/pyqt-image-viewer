@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import qmlRegisterType, QQmlListProperty, QQmlComponent, QQmlEngine, QQmlApplicationEngine
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, pyqtProperty, QCoreApplication
 from PyQt5.QtQuick import QQuickView
-from ImageHandler import ImageHandler
+from ImageController import ImageController
 from ExifViewHandler import ExifViewHandler, ExifEntry
 from ImageViewHandler import ImageViewHandler
 
@@ -21,8 +21,8 @@ if __name__ == '__main__':
     # Create a QApplication.
     app = QApplication([])
 
-    imageHandler = ImageHandler()
-    exifViewHandler = ExifViewHandler(imageHandler)
+    imageController = ImageController()
+    exifViewHandler = ExifViewHandler(imageController)
 
     qmlRegisterType(ExifViewHandler, 'Example', 1, 0, 'ExifViewHandler')
 
@@ -41,24 +41,24 @@ if __name__ == '__main__':
     nextButton          = win.findChild(QObject, 'skipForward')
 
     # Create the image view handler
-    imageViewHandler = ImageViewHandler(win, imageHandler)
+    imageViewHandler = ImageViewHandler(win, imageController)
     # Set the exif button to be handled in exif view handler
     exifViewHandler.setExifButton(exifButton)
 
-    # Connecting qml signals to ImageHandler slots
-    folderSelector.folderSelected.connect(imageHandler.onFolderPathUpdated)
-    imageSelector.imageSelected.connect(imageHandler.onImagePathUpdated)
-    previousButton.previousButtonPressed.connect(imageHandler.onPreviousImageRequested)
-    nextButton.nextButtonPressed.connect(imageHandler.onNextImageRequested)
+    # Connecting qml signals to imageController slots
+    folderSelector.folderSelected.connect(imageController.onFolderPathUpdated)
+    imageSelector.imageSelected.connect(imageController.onImagePathUpdated)
+    previousButton.previousButtonPressed.connect(imageController.onPreviousImageRequested)
+    nextButton.nextButtonPressed.connect(imageController.onNextImageRequested)
 
-    # Connecting ImageHandler signals to our slots
-    imageHandler.exifDataReady.connect(exifViewHandler.onExifDataReady)
-    imageHandler.imageFound.connect(imageViewHandler.imageFoundHandler)
-    imageHandler.imageNotFound.connect(imageViewHandler.imageNotFoundHandler)
-    imageHandler.disablePreviousImage.connect(imageViewHandler.disablePreviousImageHandler)
-    imageHandler.enablePreviousImage.connect(imageViewHandler.enablePreviousImageHandler)
-    imageHandler.disableNextImage.connect(imageViewHandler.disableNextImageHandler)
-    imageHandler.enableNextImage.connect(imageViewHandler.enableNextImageHandler)
+    # Connecting imageController signals to our slots
+    imageController.exifDataReady.connect(exifViewHandler.onExifDataReady)
+    imageController.imageFound.connect(imageViewHandler.imageFoundHandler)
+    imageController.imageNotFound.connect(imageViewHandler.imageNotFoundHandler)
+    imageController.disablePreviousImage.connect(imageViewHandler.disablePreviousImageHandler)
+    imageController.enablePreviousImage.connect(imageViewHandler.enablePreviousImageHandler)
+    imageController.disableNextImage.connect(imageViewHandler.disableNextImageHandler)
+    imageController.enableNextImage.connect(imageViewHandler.enableNextImageHandler)
 
     # Start the application
     app.exec_()
