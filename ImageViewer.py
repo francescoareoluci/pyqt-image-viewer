@@ -6,11 +6,9 @@ This module is the entry point of the application.
 It will instantiates the QApplication, connect some signals
 and launch the application.
 """
-
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtQml import qmlRegisterType, QQmlListProperty, QQmlComponent, QQmlEngine, QQmlApplicationEngine
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, pyqtProperty, QCoreApplication
-from PyQt5.QtQuick import QQuickView
+from PyQt5.QtQml import qmlRegisterType, QQmlComponent, QQmlEngine, QQmlApplicationEngine
+from PyQt5.QtCore import QObject
 from ImageController import ImageController
 from ExifViewHandler import ExifViewHandler, ExifEntry
 from ImageViewHandler import ImageViewHandler

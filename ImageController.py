@@ -44,19 +44,19 @@ class ImageController(QObject):
         """
         super().__init__()
 
-        ## State variables
+        # State variables
         self._imageIndex = 0
         self._imageCount = 0
         self._images = []
         self._cachedExifData = {}
 
-        ## Setting the observables, these will be 
+        # Setting the observables, these will be 
         # the image path of the actual image
         # and its exif data
         self._observableExifData = ObservableExifData()
         self._observablePath = ObservableImagePath()
 
-        ## Connecting observable signals
+        # Connecting observable signals
         self._observableExifData.observe(self._onExifDataCallback)
         self._observablePath.observe(self._onImageCallback)
 
@@ -101,13 +101,15 @@ class ImageController(QObject):
         and will set the ObservableExifData field.
         """
 
-        ## Path has been set. Tell the controller
+        print("Displayed image: " + path)
+
+        # Path has been set. Tell the controller
         # to show the image and image name
         self.imageFound.emit()
 
-        ## Extract exif data
+        # Extract exif data
         if path in self._cachedExifData:
-            ## Avoid to extract exif data if already
+            # Avoid to extract exif data if already
             # extracted
             tmpExif = self._cachedExifData[path]
         else:
@@ -124,10 +126,10 @@ class ImageController(QObject):
         stored at imagePath. Returns exifData (list)
         """
 
-        ## Open image file for reading
+        # Open image file for reading
         f = open(imagePath, 'rb')
 
-        ## Process file to get Exif data
+        # Process file to get Exif data
         tags = exifread.process_file(f)
         #print(tags)
 
@@ -150,19 +152,19 @@ class ImageController(QObject):
         update ObservableImagePath.
         """
 
-        print(path)
+        print("Selected image: " + path)
         self._resetState()
 
         if '.jpg' in path:
-            ## Selected an image
+            # Selected an image
             self._imageCount = 1
             self._images.append(path)
 
-            ## Disable next and previous buttons
+            # Disable next and previous buttons
             self.disableNextImage.emit()
             self.disablePreviousImage.emit()
 
-            ## Update observable
+            # Update observable
             self._observablePath.imagePath = self._images[0]
         else:
             print('File format not supported')
@@ -179,7 +181,7 @@ class ImageController(QObject):
         of the folder (if exists).
         """
 
-        print(path)
+        print("Selected folder: " + path)
         self._resetState()
 
         fileList = os.listdir(path)
@@ -189,7 +191,7 @@ class ImageController(QObject):
                 self._imageCount += 1
         
         if self._imageCount != 0:
-            ## Manage buttons
+            # Manage buttons
             if self._imageCount == 1:
                 self.disablePreviousImage.emit()
                 self.disableNextImage.emit()
@@ -197,11 +199,11 @@ class ImageController(QObject):
                 self.disablePreviousImage.emit()
                 self.enableNextImage.emit()
             
-            ## Update observable
-            print(self._images[0])
+            # Update observable
+            #print(self._images[0])
             self._observablePath.imagePath = self._images[0]
         else:
-            ## No image found in folder
+            # No image found in folder
             self.imageNotFound.emit()
 
 

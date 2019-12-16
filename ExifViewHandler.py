@@ -95,5 +95,5 @@ class ExifViewHandler(QObject):
 
         self.exif = exif
 
-        ## Show or hide the exif button on the GUI
+        # Show or hide the exif button on the GUI
         self.handleGuiButton(self._exifButton)
