@@ -76,6 +76,17 @@ QtObject {
                     onClicked: {
                         exifWindow.visible = true
                     }
+
+                    // Ctrl+e hotkey binding
+                    Shortcut {
+                        sequence: "Ctrl+e"
+                        onActivated: {
+                            if (exifButton.visible == false) {
+                                return
+                            }
+                            exifWindow.visible = true
+                        }
+                    }
                 }
 
                 Button {
