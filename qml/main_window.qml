@@ -549,6 +549,20 @@ QtObject {
                 height: exifView.height / 6
                 border.width: 1
                 border.color: '#d9d9d9'
+                color: mouseArea.containsMouse ? '#bcbec2' : 'white'
+
+                MouseArea {
+                    id: mouseArea
+
+                    anchors.fill: delegateRect
+                    visible: isGeoTag
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+
+                    onClicked: { 
+                        Qt.openUrlExternally('https://maps.google.com/?q=' + latitude + ',' + longitude)
+                    }
+                }
 
                 RowLayout {
                     spacing: 20
@@ -559,15 +573,6 @@ QtObject {
                         text: name
                         Layout.topMargin: delegateRect.height / 2.5
                         Layout.leftMargin: 15
-
-                        MouseArea {
-                            anchors.fill: parent
-                            visible: isGeoTag
-                            onClicked: { 
-                                //Qt.openUrlExternally('http://www.google.it')
-                                Qt.openUrlExternally('https://maps.google.com/?q='+latitude+','+longitude)
-                            }
-                        }
                     }
 
                     // Spacer item

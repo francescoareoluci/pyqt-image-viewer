@@ -121,6 +121,7 @@ class ExifViewHandler(QObject):
         else:
             seconds = numSeconds
         decimal += (seconds / 3600)
+        
         return decimal
 
 
@@ -128,22 +129,39 @@ class ExifViewHandler(QObject):
         data = self._imageController.getExifData()
 
         exif = []
+        latitudeFound = False
+        longitudeFound = False
         for key in data:
             exifEntry = ExifEntry()
             isGeoTag = False
-            if 'GPSLongitude' in key or 'GPSLatitude' in key:
-                isGeoTag = True
+
             if key == 'GPS GPSLatitude':
                 degLatitude = data[key].values
-                exifEntry.latitude = self.getDecimalCoords(degLatitude)
+                latitude = self.getDecimalCoords(degLatitude)
+                latitudeFound = True
             elif key == 'GPS GPSLongitude':
                 degLongitude = data[key].values
-                exifEntry.longitude = self.getDecimalCoords(degLongitude)
+                longitude = self.getDecimalCoords(degLongitude)
+                longitudeFound = True
 
             exifEntry.name = str(key)
             exifEntry.value = str(data[key])
             exifEntry.isGeoTag = isGeoTag
             exif.append(exifEntry)
+
+        # Iterate again (ugh...) through the list to set both
+        # latitude and longitude to the entry
+        if latitudeFound == True and longitudeFound == True:
+            for entry in exif:
+                if entry.name == 'GPS GPSLatitude':
+                    entry.latitude = latitude
+                    entry.longitude = longitude
+                    entry.isGeoTag = True
+
+                if entry.name == 'GPS GPSLongitude':
+                    entry.latitude = latitude
+                    entry.longitude = longitude
+                    entry.isGeoTag = True
 
         #for d in exif:
         #    print(d.name)
