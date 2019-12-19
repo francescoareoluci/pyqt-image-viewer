@@ -297,6 +297,9 @@ QtObject {
                             rotateRight.rotated = 0
                             // Resetting the rotation angle
                             displayedImage.rotationAngle = 0
+
+                            // Resetting the image width
+                            displayedImage.Layout.preferredWidth = displayedImage.parent.width - 50
                         }
 
                         // Slot
@@ -375,6 +378,7 @@ QtObject {
                             }
                             // Setting the angle
                             displayedImage.rotationAngle = displayedImage.rotationAngle - 90
+                            //displayedImage.Layout.preferredWidth = displayedImage.parent.width - 50
                         }
 
                         // Slot
@@ -452,7 +456,7 @@ QtObject {
                             }
                             // Setting the angle
                             displayedImage.rotationAngle = displayedImage.rotationAngle + 90
-                            displayedImage.Layout.preferredWidth = displayedImage.parent.width - 50
+                            //displayedImage.Layout.preferredWidth = displayedImage.parent.width - 50
                         }
 
                         // Slot
@@ -513,6 +517,9 @@ QtObject {
                             rotateRight.rotated = 0
                             // Resetting the rotation angle
                             displayedImage.rotationAngle = 0
+
+                            // Resetting the image width
+                            displayedImage.Layout.preferredWidth = displayedImage.parent.width - 50
                         }
 
                         // Slot
@@ -584,9 +591,30 @@ QtObject {
         onHeightChanged: {
             if (rotateRight.rotated == 1) {
                 displayedImage.Layout.preferredWidth = displayedImage.height
-            }
-            if (rotateLeft.rotated == 1) {
+            } 
+            else if (rotateLeft.rotated == 1) {
                 displayedImage.Layout.preferredWidth = displayedImage.height
+            }
+            else if (rotateLeft.rotated == 0) {
+                displayedImage.Layout.preferredWidth = displayedImage.parent.width - 50
+            }
+            else if (rotateRight == 0) {
+                displayedImage.Layout.preferredWidth = displayedImage.parent.width - 50
+            }
+        }
+
+        onWidthChanged: {
+            if (rotateRight.rotated == 1) {
+                displayedImage.Layout.preferredWidth = displayedImage.height
+            } 
+            else if (rotateLeft.rotated == 1) {
+                displayedImage.Layout.preferredWidth = displayedImage.height
+            }
+            else if (rotateLeft.rotated == 0) {
+                displayedImage.Layout.preferredWidth = displayedImage.parent.width - 50
+            }
+            else if (rotateRight == 0) {
+                displayedImage.Layout.preferredWidth = displayedImage.parent.width - 50
             }
         }
     }
