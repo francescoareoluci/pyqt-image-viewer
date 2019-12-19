@@ -135,6 +135,7 @@ class ExifViewHandler(QObject):
             exifEntry = ExifEntry()
             isGeoTag = False
 
+            # Store latitude and longitude, if tag is existing
             if key == 'GPS GPSLatitude':
                 degLatitude = data[key].values
                 latitude = self.getDecimalCoords(degLatitude)
@@ -144,38 +145,39 @@ class ExifViewHandler(QObject):
                 longitude = self.getDecimalCoords(degLongitude)
                 longitudeFound = True
 
+            # Store latitude and longitude reference, if tag is existing
             if key == 'GPS GPSLatitudeRef':
-                latRef = data[key].values
+                latitudeRef = data[key].values
             elif key == 'GPS GPSLongitudeRef':
-                lonRef = data[key].values
+                longitudeRef = data[key].values
 
             exifEntry.name = str(key)
             exifEntry.value = str(data[key])
             exifEntry.isGeoTag = isGeoTag
             exif.append(exifEntry)
 
-        # Iterate again (ugh...) through the list to set both
+        # Iterate again through the list to set both
         # latitude and longitude to the entry
         if latitudeFound == True and longitudeFound == True:
-            for entry in exif:
-                if entry.name == 'GPS GPSLatitude' or entry.name == 'GPS GPSLongitude':
-                    if latRef == 'N':
-                        entry.latitude = latitude
-                    else:
-                        entry.latitude = -latitude
-
-                    if lonRef == 'E':
-                        entry.longitude = longitude
-                    else:
-                        entry.longitude = -longitude
-
-                    entry.isGeoTag = True
-
-        #for d in exif:
-        #    print(d.name)
-        #    print(d.value)
+            self.setEntryCoordinates(exif, latitude, longitude, latitudeRef, longitudeRef)
 
         self.exif = exif
 
         # Show or hide the exif button on the GUI
         self.handleGuiButton(self._exifButton)
+
+
+    def setEntryCoordinates(self, exif, latitude, longitude, latitudeRef, longitudeRef):
+        for entry in exif:
+            if entry.name == 'GPS GPSLatitude' or entry.name == 'GPS GPSLongitude':
+                if latitudeRef == 'N':
+                    entry.latitude = latitude
+                else:
+                    entry.latitude = -latitude
+
+                if longitudeRef == 'E':
+                    entry.longitude = longitude
+                else:
+                    entry.longitude = -longitude
+
+                entry.isGeoTag = True
