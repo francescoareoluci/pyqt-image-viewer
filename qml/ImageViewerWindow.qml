@@ -11,9 +11,11 @@ QtObject {
 
     property var controlWindow: ApplicationWindow {
         id: mainWindow
+
         width: 960; height: 720
         minimumWidth: 600
         minimumHeight: 400
+
         visible: true; title: "Image Viewer"
         FontLoader { id: webFont; source: "../assets/Lato-Regular.ttf" }
 
@@ -243,6 +245,8 @@ QtObject {
 
                     source: "../assets/default_image.png"
                     fillMode: Image.PreserveAspectFit
+                    asynchronous: true
+                    autoTransform: true
 
                     Layout.preferredWidth: parent.width - 50
                     Layout.preferredHeight: parent.height - 120
@@ -297,14 +301,14 @@ QtObject {
 
                         // Slot
                         function disableButton() {
-                            skipBackward.enabled = 'false'
+                            skipBackward.enabled = false
                             skipBackwardRect.color = '#c9bfbf'
                             skipBackwardImage.source = '../assets/skip_backward_disabled.png'
                         }
 
                         // Slot
                         function enableButton() {
-                            skipBackward.enabled = 'true'
+                            skipBackward.enabled = true
                             skipBackwardRect.color = '#8fbccc'
                             skipBackwardImage.source = '../assets/skip_backward.png'
                         }
@@ -354,7 +358,8 @@ QtObject {
                                 rotated = 1
                             }
                             else if (rotated == 0 && rotateRight.rotated == 1) {
-                                displayedImage.width = parent.width
+                                displayedImage.width = displayedImage.parent.width - 50
+                                displayedImage.height = displayedImage.parent.height - 120
                                 rotateRight.rotated = 0
                                 rotated = 0
                             }
@@ -364,7 +369,8 @@ QtObject {
                                 rotated = 0 
                             }
                             else {
-                                displayedImage.width = parent.width
+                                displayedImage.width = displayedImage.parent.width - 50
+                                displayedImage.height = displayedImage.parent.height - 120
                                 rotated = 0
                             }
                             // Setting the angle
@@ -373,14 +379,14 @@ QtObject {
 
                         // Slot
                         function disableButton() {
-                            rotateLeft.enabled = 'false'
+                            rotateLeft.enabled = false
                             rotateLeftRect.color = '#c9bfbf'
                             rotateLeftImage.source = '../assets/rotate_left_disabled.png'
                         }
 
                         // Slot
                         function enableButton() {
-                            rotateLeft.enabled = 'true'
+                            rotateLeft.enabled = true
                             rotateLeftRect.color = '#8fbccc'
                             rotateLeftImage.source = '../assets/rotate_left.png'
                         }
@@ -429,7 +435,8 @@ QtObject {
                                 rotated = 1
                             }
                             else if (rotated == 0 && rotateLeft.rotated == 1) {
-                                displayedImage.width = parent.width
+                                displayedImage.width = displayedImage.parent.width - 50
+                                displayedImage.height = displayedImage.parent.height - 120
                                 rotateLeft.rotated = 0
                                 rotated = 0
                             }
@@ -439,23 +446,25 @@ QtObject {
                                 rotated = 0 
                             }
                             else {
-                                displayedImage.width = parent.width
+                                displayedImage.width = displayedImage.parent.width - 50
+                                displayedImage.height = displayedImage.parent.height - 120
                                 rotated = 0
                             }
                             // Setting the angle
                             displayedImage.rotationAngle = displayedImage.rotationAngle + 90
+                            displayedImage.Layout.preferredWidth = displayedImage.parent.width - 50
                         }
 
                         // Slot
                         function disableButton() {
-                            rotateRight.enabled = 'false'
+                            rotateRight.enabled = false
                             rotateRightRect.color = '#c9bfbf'
                             rotateRightImage.source = '../assets/rotate_right_disabled.png'
                         }
 
                         // Slot
                         function enableButton() {
-                            rotateRight.enabled = 'true'
+                            rotateRight.enabled = true
                             rotateRightRect.color = '#8fbccc'
                             rotateRightImage.source = '../assets/rotate_right.png'
                         }
@@ -497,10 +506,6 @@ QtObject {
                         signal nextButtonPressed()
 
                         function handleNextImage() {
-                            if (skipForward.enabled == 'false') {
-                                return                                
-                            }
-
                             nextButtonPressed()
                             
                             // Resetting the state of right and left rotate buttons
@@ -512,14 +517,14 @@ QtObject {
 
                         // Slot
                         function disableButton() {
-                            skipForward.enabled = 'false'
+                            skipForward.enabled = false
                             skipForwardRect.color = '#c9bfbf'
                             skipForwardImage.source = '../assets/skip_forward_disabled.png'
                         }
 
                         // Slot
                         function enableButton() {
-                            skipForward.enabled = 'true'
+                            skipForward.enabled = true
                             skipForwardRect.color = '#8fbccc'
                             skipForwardImage.source = '../assets/skip_forward.png'
                         }
@@ -573,6 +578,16 @@ QtObject {
                     }
                 }
     		}
+        }
+
+        // Used to prevent image resize if a previous rotation has occurred
+        onHeightChanged: {
+            if (rotateRight.rotated == 1) {
+                displayedImage.Layout.preferredWidth = displayedImage.height
+            }
+            if (rotateLeft.rotated == 1) {
+                displayedImage.Layout.preferredWidth = displayedImage.height
+            }
         }
     }
 
