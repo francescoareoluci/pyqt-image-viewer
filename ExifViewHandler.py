@@ -17,9 +17,9 @@ class ExifEntry(QObject):
     Each entry will have the following fields:
     name: Exif tag name
     value: Exif tag value
-    isGeoTag: Boolean, true for longitude and latitude entries (if exising. If true, a mouse area will be created on the entry
-    latitude: Entry latitude. Each entry will have this, even if they are not gps tags...
-    longitude: Entry longitude. Each entry will have this, even if they are not gps tags...
+    isGeoTag: Boolean, true for longitude and latitude entries
+    latitude: Entry latitude
+    longitude: Entry longitude
 
     For each field a getter and a setter is provided. Each field have a signal which is fired
     each time it is modified.

@@ -45,10 +45,10 @@ class ImageController(QObject):
         super().__init__()
 
         # State variables
-        self._imageIndex = 0
-        self._imageCount = 0
-        self._images = []
-        self._cachedExifData = {}
+        self._imageIndex = 0        # Index representing the displayed image in _images list
+        self._imageCount = 0        # Number of images found in a folder
+        self._images = []           # List of images to be displayed
+        self._cachedExifData = {}   # Map to cache exif data for each image
 
         # Setting the observables, these will be 
         # the image path of the actual image

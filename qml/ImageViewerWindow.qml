@@ -213,11 +213,13 @@ QtObject {
                     id: fileNameLabel
                     objectName: 'fileNameLabel'
 
+                    // Slot
                     function handleImageFound(path) {
                         fileNameLabel.visible = 'true'
                         fileNameLabel.text = '<b>Image path:</b>: ' + path
                     }
 
+                    // Slot
                     function handleImageNotFound(path) {
                         fileNameLabel.visible = 'true'
                         fileNameLabel.text = '<font color=\"#c23c2b\"><b>No images found in folder: </b>' + path + '</font>'
@@ -229,10 +231,12 @@ QtObject {
                     objectName: 'displayedImage'
                     property var rotationAngle: 0
 
+                    // Slot
                     function handleImageUpdate(path) {
                         displayedImage.source = 'file://' + path
                     }
 
+                    // Slot
                     function handleImageNotFoundUpdate() {
                         displayedImage.source = '../assets/default_image.png'
                     }
@@ -292,12 +296,14 @@ QtObject {
                             displayedImage.rotationAngle = 0
                         }
 
+                        // Slot
                         function disableButton() {
                             skipBackward.enabled = 'false'
                             skipBackwardRect.color = '#c9bfbf'
                             skipBackwardImage.source = '../assets/skip_backward_disabled.png'
                         }
 
+                        // Slot
                         function enableButton() {
                             skipBackward.enabled = 'true'
                             skipBackwardRect.color = '#8fbccc'
@@ -366,12 +372,14 @@ QtObject {
                             displayedImage.rotationAngle = displayedImage.rotationAngle - 90
                         }
 
+                        // Slot
                         function disableButton() {
                             rotateLeft.enabled = 'false'
                             rotateLeftRect.color = '#c9bfbf'
                             rotateLeftImage.source = '../assets/rotate_left_disabled.png'
                         }
 
+                        // Slot
                         function enableButton() {
                             rotateLeft.enabled = 'true'
                             rotateLeftRect.color = '#8fbccc'
@@ -439,12 +447,14 @@ QtObject {
                             displayedImage.rotationAngle = displayedImage.rotationAngle + 90
                         }
 
+                        // Slot
                         function disableButton() {
                             rotateRight.enabled = 'false'
                             rotateRightRect.color = '#c9bfbf'
                             rotateRightImage.source = '../assets/rotate_right_disabled.png'
                         }
 
+                        // Slot
                         function enableButton() {
                             rotateRight.enabled = 'true'
                             rotateRightRect.color = '#8fbccc'
@@ -501,12 +511,14 @@ QtObject {
                             displayedImage.rotationAngle = 0
                         }
 
+                        // Slot
                         function disableButton() {
                             skipForward.enabled = 'false'
                             skipForwardRect.color = '#c9bfbf'
                             skipForwardImage.source = '../assets/skip_forward_disabled.png'
                         }
 
+                        // Slot
                         function enableButton() {
                             skipForward.enabled = 'true'
                             skipForwardRect.color = '#8fbccc'
@@ -532,10 +544,6 @@ QtObject {
                         onClicked: {
                             handleNextImage()
                         }
-
-                        //onEnableNextImage: {
-                        //    skipForwardRect.color = '#8fbccc'
-                        //}
 
                         // Right arrow hotkey binding
                         Shortcut {
