@@ -5,11 +5,12 @@ Author: Francesco Areoluci
 This python application is an image viewer which support visualization of EXIF data.
 It is build with pyqt framework and it relies on qml language to structure the view.
 
-Functionalities:
+Features:
 - Single image viewer
 - Folder selection for multiple image view
 - Image rotation by 90 degrees steps
 - Image EXIF data view
+- Google Maps position display
 - Hotkeys
 - Responsive window
 
@@ -34,10 +35,12 @@ Once the application has been started, you can select an image to be viewed by c
 on the button 'Choose an image' or you can select a folder to view all the images
 in that folder by clicking on the button 'Select a folder'.
 Once an image has been loaded you can rotate it left/right by 90 degrees steps by using
-the controls located in the bottom of the image. If you have opened a folder and more than
-one image is stored on the folder, you can switch between images using the controls located 
-in the bottom of the image.
+the controls located in the bottom of the image. 
+If you have opened a folder and more than one image is stored on the folder, 
+you can switch between images using the controls located in the bottom of the image.
 If an image has some exif data stored, you can view them by clicking on the button 'View EXIF data'.
+If an image contains geolocalization tags, by clicking on Latitude or Longitude entry a default
+browser will be opened and position will be displayed in a Google Maps page. 
 
 Hotkeys:
 

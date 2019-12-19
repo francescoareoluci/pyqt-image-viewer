@@ -11,7 +11,7 @@ QtObject {
 
     property var controlWindow: ApplicationWindow {
         id: mainWindow
-        width: 800; height: 600
+        width: 960; height: 720
         minimumWidth: 600
         minimumHeight: 400
         visible: true; title: "Image Viewer"
@@ -244,7 +244,6 @@ QtObject {
                     source: "../assets/default_image.png"
                     fillMode: Image.PreserveAspectFit
 
-                    //Layout.fillWidth: true; Layout.fillHeight: true
                     Layout.preferredWidth: parent.width - 50
                     Layout.preferredHeight: parent.height - 120
 
@@ -581,7 +580,7 @@ QtObject {
     // selected image
     property var testWindow: ApplicationWindow {
         id: exifWindow
-        width: 600; height: 400
+        width: 800; height: 600
         minimumWidth: 400
         minimumHeight: 300
         visible: false; title: "Exif Data"
@@ -591,8 +590,8 @@ QtObject {
         header: Label {
             text: "Name"
             font.pointSize: 11
-            topPadding: 10
-            bottomPadding: 10
+            topPadding: 15
+            bottomPadding: 15
             leftPadding: 15
             color: "white"
             background: Rectangle {
@@ -604,8 +603,8 @@ QtObject {
                 anchors.right: parent.right
                 text: "Value"
                 font.pointSize: 11
-                topPadding: 10
-                bottomPadding: 10
+                topPadding: 15
+                bottomPadding: 15
                 rightPadding: 15
                 color: "white"
             }
