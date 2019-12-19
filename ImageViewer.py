@@ -14,13 +14,6 @@ from ExifViewHandler import ExifViewHandler, ExifEntry
 from ImageViewHandler import ImageViewHandler
 
 
-#def coordEvaluated():
-#    latitude = imageController.getLatitude()
-#    longitude = imageController.getLongitude()
-#    link = 'https://maps.google.com/?q=' + str(latitude) + ',' + str(longitude)
-#    mouseArea.setProperty('link', link)
-
-
 if __name__ == '__main__':
 
     # Create a QApplication.
@@ -44,7 +37,6 @@ if __name__ == '__main__':
     exifButton          = win.findChild(QObject, 'exifButton')
     previousButton      = win.findChild(QObject, 'skipBackward')
     nextButton          = win.findChild(QObject, 'skipForward')
-    mouseArea           = win.findChild(QObject, 'mouseArea')
 
     # Create the image view handler
     imageViewHandler = ImageViewHandler(win, imageController)
@@ -57,15 +49,12 @@ if __name__ == '__main__':
     previousButton.previousButtonPressed.connect(imageController.onPreviousImageRequested)
     nextButton.nextButtonPressed.connect(imageController.onNextImageRequested)
 
-    # Connecting imageController signals to our slots
+    # Connecting imageController signal to exifViewHandler slot
     imageController.exifDataReady.connect(exifViewHandler.onExifDataReady)
+
+    # Connecting imageController signals to imageVIewHandler slots
     imageController.imageFound.connect(imageViewHandler.imageFoundHandler)
     imageController.imageNotFound.connect(imageViewHandler.imageNotFoundHandler)
-    imageController.disablePreviousImage.connect(imageViewHandler.disablePreviousImageHandler)
-    imageController.enablePreviousImage.connect(imageViewHandler.enablePreviousImageHandler)
-    imageController.disableNextImage.connect(imageViewHandler.disableNextImageHandler)
-    imageController.enableNextImage.connect(imageViewHandler.enableNextImageHandler)
-    #imageController.coordsEvaluated.connect(coordEvaluated)
 
     # Start the application
     app.exec_()

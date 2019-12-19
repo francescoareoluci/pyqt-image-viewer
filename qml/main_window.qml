@@ -19,7 +19,6 @@ QtObject {
 
         // Setting the mainWindow background image
         background: BorderImage { 
-                z: -3
                 horizontalTileMode: BorderImage.Repeat
                 verticalTileMode: BorderImage.Repeat
                 source: "../assets/cream_pixels.png"
@@ -172,7 +171,7 @@ QtObject {
             }
         }
 
-        // File dialog used to select an image
+        // File dialog used to select a folder
         FolderSelector {
             id: folderFileDialog
             objectName: "folderFileDialog"
@@ -213,13 +212,30 @@ QtObject {
                 FilenameLabel {
                     id: fileNameLabel
                     objectName: 'fileNameLabel'
-                    z: -2
+
+                    function handleImageFound(path) {
+                        fileNameLabel.visible = 'true'
+                        fileNameLabel.text = '<b>Image path:</b>: ' + path
+                    }
+
+                    function handleImageNotFound(path) {
+                        fileNameLabel.visible = 'true'
+                        fileNameLabel.text = '<font color=\"#c23c2b\"><b>No images found in folder: </b>' + path + '</font>'
+                    }
                 }
 
                 Image {
                     id: displayedImage
                     objectName: 'displayedImage'
                     property var rotationAngle: 0
+
+                    function handleImageUpdate(path) {
+                        displayedImage.source = 'file://' + path
+                    }
+
+                    function handleImageNotFoundUpdate() {
+                        displayedImage.source = '../assets/default_image.png'
+                    }
 
                     source: "../assets/default_image.png"
                     fillMode: Image.PreserveAspectFit
@@ -274,6 +290,18 @@ QtObject {
                             rotateRight.rotated = 0
                             // Resetting the rotation angle
                             displayedImage.rotationAngle = 0
+                        }
+
+                        function disableButton() {
+                            skipBackward.enabled = 'false'
+                            skipBackwardRect.color = '#c9bfbf'
+                            skipBackwardImage.source = '../assets/skip_backward_disabled.png'
+                        }
+
+                        function enableButton() {
+                            skipBackward.enabled = 'true'
+                            skipBackwardRect.color = '#8fbccc'
+                            skipBackwardImage.source = '../assets/skip_backward.png'
                         }
 
                         Layout.preferredWidth: 30
@@ -338,6 +366,18 @@ QtObject {
                             displayedImage.rotationAngle = displayedImage.rotationAngle - 90
                         }
 
+                        function disableButton() {
+                            rotateLeft.enabled = 'false'
+                            rotateLeftRect.color = '#c9bfbf'
+                            rotateLeftImage.source = '../assets/rotate_left_disabled.png'
+                        }
+
+                        function enableButton() {
+                            rotateLeft.enabled = 'true'
+                            rotateLeftRect.color = '#8fbccc'
+                            rotateLeftImage.source = '../assets/rotate_left.png'
+                        }
+
                         Layout.topMargin: 50
                         Layout.preferredWidth: 30
                         Layout.bottomMargin: 20
@@ -399,6 +439,18 @@ QtObject {
                             displayedImage.rotationAngle = displayedImage.rotationAngle + 90
                         }
 
+                        function disableButton() {
+                            rotateRight.enabled = 'false'
+                            rotateRightRect.color = '#c9bfbf'
+                            rotateRightImage.source = '../assets/rotate_right_disabled.png'
+                        }
+
+                        function enableButton() {
+                            rotateRight.enabled = 'true'
+                            rotateRightRect.color = '#8fbccc'
+                            rotateRightImage.source = '../assets/rotate_right.png'
+                        }
+
                         Layout.topMargin: 50
                         Layout.preferredWidth: 30
                         Layout.bottomMargin: 20
@@ -449,6 +501,18 @@ QtObject {
                             displayedImage.rotationAngle = 0
                         }
 
+                        function disableButton() {
+                            skipForward.enabled = 'false'
+                            skipForwardRect.color = '#c9bfbf'
+                            skipForwardImage.source = '../assets/skip_forward_disabled.png'
+                        }
+
+                        function enableButton() {
+                            skipForward.enabled = 'true'
+                            skipForwardRect.color = '#8fbccc'
+                            skipForwardImage.source = '../assets/skip_forward.png'
+                        }
+
                         Layout.preferredWidth: 30
                         Layout.topMargin: 50
                         Layout.rightMargin: 45
@@ -468,6 +532,10 @@ QtObject {
                         onClicked: {
                             handleNextImage()
                         }
+
+                        //onEnableNextImage: {
+                        //    skipForwardRect.color = '#8fbccc'
+                        //}
 
                         // Right arrow hotkey binding
                         Shortcut {

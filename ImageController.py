@@ -26,13 +26,13 @@ class ImageController(QObject):
     imagePath = imageController.getImagePath()
     """
 
-    exifDataReady          = pyqtSignal()
-    imageFound             = pyqtSignal()
-    imageNotFound          = pyqtSignal()
-    enablePreviousImage    = pyqtSignal()
-    enableNextImage        = pyqtSignal()
-    disablePreviousImage   = pyqtSignal()
-    disableNextImage       = pyqtSignal()
+    exifDataReady          = pyqtSignal()       # Emitted when exif data has been extracted and observable has been updated
+    imageFound             = pyqtSignal()       # Emitted when at least an image has been found
+    imageNotFound          = pyqtSignal(str)    # Emitted when no image has been found after a search, pass folder name
+    enablePreviousImage    = pyqtSignal()       # Emitted when the control to switch to the previous image should be enabled
+    enableNextImage        = pyqtSignal()       # Emitted when the control to switch to the next image should be enabled
+    disablePreviousImage   = pyqtSignal()       # Emitted when the control to switch to the previous image should be disabled
+    disableNextImage       = pyqtSignal()       # Emitted when the control to switch to the next image should be disabled
 
     ## Constructor
     def __init__(self):
@@ -204,7 +204,7 @@ class ImageController(QObject):
             self._observablePath.imagePath = self._images[0]
         else:
             # No image found in folder
-            self.imageNotFound.emit()
+            self.imageNotFound.emit(path)
 
 
     ## Slot for handling user request to view the previous
