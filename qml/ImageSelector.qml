@@ -3,9 +3,9 @@ import QtQuick.Dialogs 1.0
 
 FileDialog {
     visible: false
-    title: "Please choose a jpg image"
+    title: "Please choose an image"
     folder: shortcuts.home
-    nameFilters: [ "Image files (*.jpg)" ]
+    nameFilters: [ "Image files (*.jpg *.jpeg *.png *.tiff)" ]
     
     onRejected: {
         console.log("File not selected")

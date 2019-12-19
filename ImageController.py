@@ -34,6 +34,8 @@ class ImageController(QObject):
     disablePreviousImage   = pyqtSignal()       # Emitted when the control to switch to the previous image should be disabled
     disableNextImage       = pyqtSignal()       # Emitted when the control to switch to the next image should be disabled
 
+    supportedImageFormats  = ['jpg', 'jpeg', 'tiff', 'png']
+
     ## Constructor
     def __init__(self):
         """ __init__
@@ -155,7 +157,8 @@ class ImageController(QObject):
         print("Selected image: " + path)
         self._resetState()
 
-        if '.jpg' in path:
+        fileExtension = path.rpartition('.')[-1].lower()
+        if fileExtension in self.supportedImageFormats:
             # Selected an image
             self._imageCount = 1
             self._images.append(path)
@@ -186,7 +189,8 @@ class ImageController(QObject):
 
         fileList = os.listdir(path)
         for file in fileList:
-            if '.jpg' in file:
+            fileExtension = file.rpartition('.')[-1].lower()
+            if fileExtension in self.supportedImageFormats:
                 self._images.append(path + '/' + file)
                 self._imageCount += 1
         
