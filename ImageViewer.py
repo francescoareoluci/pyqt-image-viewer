@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     engine = QQmlApplicationEngine()
     engine.rootContext().setContextProperty('exifViewHandler', exifViewHandler)
-    engine.load('./qml/main_window.qml')
+    engine.load('./qml/ImageViewerWindow.qml')
     
     # Get the root window
     win = engine.rootObjects()[0]
@@ -40,6 +40,7 @@ if __name__ == '__main__':
 
     # Create the image view handler
     imageViewHandler = ImageViewHandler(win, imageController)
+
     # Set the exif button to be handled in exif view handler
     exifViewHandler.setExifButton(exifButton)
 
@@ -48,13 +49,6 @@ if __name__ == '__main__':
     imageSelector.imageSelected.connect(imageController.onImagePathUpdated)
     previousButton.previousButtonPressed.connect(imageController.onPreviousImageRequested)
     nextButton.nextButtonPressed.connect(imageController.onNextImageRequested)
-
-    # Connecting imageController signal to exifViewHandler slot
-    imageController.exifDataReady.connect(exifViewHandler.onExifDataReady)
-
-    # Connecting imageController signals to imageVIewHandler slots
-    imageController.imageFound.connect(imageViewHandler.imageFoundHandler)
-    imageController.imageNotFound.connect(imageViewHandler.imageNotFoundHandler)
 
     # Start the application
     app.exec_()

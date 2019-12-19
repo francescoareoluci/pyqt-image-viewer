@@ -59,6 +59,10 @@ class ImageViewHandler(QObject):
         # Current path
         self._pwd = os.getcwd()
 
+        # Connecting imageController signals to slots
+        self._imageController.imageFound.connect(self.imageFoundHandler)
+        self._imageController.imageNotFound.connect(self.imageNotFoundHandler)
+
         # Connecting controller signals to qml functions (slots)
         self._imageController.enableNextImage.connect(self._nextButton.enableButton)
         self._imageController.disableNextImage.connect(self._nextButton.disableButton)
