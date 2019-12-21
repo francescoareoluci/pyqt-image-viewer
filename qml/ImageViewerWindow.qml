@@ -43,7 +43,7 @@ QtObject {
             bottomPadding: 15
             leftPadding: 30
             color: "white"
-
+            
             background: Rectangle {
                 id: headerRect
                 color: "#8fbccc"
@@ -240,10 +240,10 @@ QtObject {
 
                     // Slot
                     function handleImageNotFoundUpdate() {
-                        displayedImage.source = '../assets/default_image.png'
+                        displayedImage.source = '../assets/default_image.svg'
                     }
 
-                    source: "../assets/default_image.png"
+                    source: "../assets/default_image.svg"
                     fillMode: Image.PreserveAspectFit
                     asynchronous: true
                     autoTransform: true

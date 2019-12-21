@@ -6,7 +6,8 @@ Label {
     font.family: webFont.name
     color: "#8fbccc"
 
-    visible: false
+    visible: true
+    text: 'No images selected. Click on "Choose an image" or "Select a folder" buttons to display an image'
 
     topPadding: 9
     bottomPadding: 9
