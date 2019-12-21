@@ -35,7 +35,8 @@ Once the application has been started, you can select an image to be viewed by c
 on the button 'Choose an image' or you can select a folder to view all the images
 in that folder by clicking on the button 'Select a folder'.
 Once an image has been loaded you can rotate it left/right by 90 degrees steps by using
-the controls located in the bottom of the image. 
+the controls located in the bottom of the image.
+The image can be resized by resizing the application window.
 If you have opened a folder and more than one image is stored on the folder, 
 you can switch between images using the controls located in the bottom of the image.
 If an image has some exif data stored, you can view them by clicking on the button 'View EXIF data'.
