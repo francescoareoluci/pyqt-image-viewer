@@ -6,6 +6,7 @@ This module is the entry point of the application.
 It will instantiates the QApplication, connect some signals
 and launch the application.
 """
+import os
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import qmlRegisterType, QQmlComponent, QQmlEngine, QQmlApplicationEngine
 from PyQt5.QtCore import QObject
@@ -26,8 +27,11 @@ if __name__ == '__main__':
 
     engine = QQmlApplicationEngine()
     engine.rootContext().setContextProperty('exifViewHandler', exifViewHandler)
-    engine.load('./qml/ImageViewerWindow.qml')
     
+    qmlPath = '.' + os.sep + 'qml' + os.sep + 'ImageViewerWindow.qml'
+    #engine.load('./qml/ImageViewerWindow.qml')
+    engine.load(qmlPath)
+
     # Get the root window
     win = engine.rootObjects()[0]
 
