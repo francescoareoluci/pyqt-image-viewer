@@ -11,6 +11,7 @@ QtObject {
 
     property var controlWindow: ApplicationWindow {
         id: mainWindow
+        property var platform: Qt.platform.os
 
         width: Screen.width - (Screen.width / 3)
         height: Screen.height - (Screen.height / 3)
@@ -161,7 +162,12 @@ QtObject {
             onAccepted: {
                 // Cleaning the file url
                 var path = imageFileDialog.fileUrl.toString();
-                path = path.replace(/^(file:\/{3})/,"/");
+                if (mainWindow.platform == 'linux') {
+                    path = path.replace(/^(file:\/{3})/,"/");
+                }
+                if (mainWindow.platform == 'windows') {
+                    path = path.replace(/^(file:\/{3})/,"");
+                }
                 var cleanPath = decodeURIComponent(path);
 
                 // Emit signal
@@ -185,7 +191,12 @@ QtObject {
             onAccepted: {
                 // Cleaning the file url
                 var path = folderFileDialog.fileUrl.toString();
-                path = path.replace(/^(file:\/{3})/,"/");
+                if (mainWindow.platform == 'linux') {
+                    path = path.replace(/^(file:\/{3})/,"/");
+                }
+                if (mainWindow.platform == 'windows') {
+                    path = path.replace(/^(file:\/{3})/,"");
+                }
                 var cleanPath = decodeURIComponent(path);
 
                 // Emit signal
@@ -237,7 +248,12 @@ QtObject {
 
                     // Slot
                     function handleImageUpdate(path) {
-                        displayedImage.source = 'file://' + path
+                        if (mainWindow.platform == 'linux') {
+                            displayedImage.source = 'file://' + path
+                        }
+                        if (mainWindow.platform == 'windows') {
+                            displayedImage.source = 'file:///' + path
+                        }
                     }
 
                     // Slot
