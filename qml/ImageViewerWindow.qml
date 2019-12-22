@@ -12,7 +12,9 @@ QtObject {
     property var controlWindow: ApplicationWindow {
         id: mainWindow
 
-        width: 960; height: 720
+        width: Screen.width - (Screen.width / 3)
+        height: Screen.height - (Screen.height / 3)
+        //width: 960; height: 720
         minimumWidth: 600
         minimumHeight: 400
 
@@ -623,7 +625,9 @@ QtObject {
     // selected image
     property var testWindow: ApplicationWindow {
         id: exifWindow
-        width: 800; height: 600
+        width: Screen.width / 2
+        height: Screen.height / 2
+        //width: 800; height: 600
         minimumWidth: 400
         minimumHeight: 300
         visible: false; title: "Exif Data"
