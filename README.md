@@ -15,12 +15,14 @@ Features:
 - Responsive window
 
 Dependencies:
+- pyqt
 - exifread
 
-In order to install this dependency:
+In order to install these dependencies:
 - Using Anaconda as an environment manager:
 
 ```
+conda install -c anaconda pyqt
 conda install -c conda-forge exifread
 ```
 
@@ -40,8 +42,8 @@ The image can be resized by resizing the application window.
 If you have opened a folder and more than one image is stored on the folder, 
 you can switch between images using the controls located in the bottom of the image.
 If an image has some exif data stored, you can view them by clicking on the button 'View EXIF data'.
-If an image contains geolocalization tags, by clicking on Latitude or Longitude entry a default
-browser will be opened and position will be displayed in a Google Maps page. 
+If an image contains geolocalization tags, by clicking on Latitude or Longitude entry a
+browser will be opened and position will be displayed in a Google Maps page.
 
 Hotkeys:
 
@@ -62,4 +64,8 @@ In order to automatically generate documentation, if you have installed Doxygen,
 doxygenn doxy
 ```
 
-If you don't have installed Doxygen, you can check out this how to: http://www.doxygen.nl/download.html
+If you don't have installed Doxygen, you can follow this how to: http://www.doxygen.nl/download.html
+
+Testing
+
+This application has been tested on Ubuntu 18.04 and Windows 10.
