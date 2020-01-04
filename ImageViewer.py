@@ -9,6 +9,7 @@ and launch the application.
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtQml import qmlRegisterType, QQmlComponent, QQmlEngine, QQmlApplicationEngine
 from PyQt5.QtCore import QObject
+from PyQt5.QtGui import QIcon
 from ImageController import ImageController
 from ExifViewHandler import ExifViewHandler, ExifEntry
 from ImageViewHandler import ImageViewHandler
@@ -50,6 +51,9 @@ if __name__ == '__main__':
     imageSelector.imageSelected.connect(imageController.onImagePathUpdated)
     previousButton.previousButtonPressed.connect(imageController.onPreviousImageRequested)
     nextButton.nextButtonPressed.connect(imageController.onNextImageRequested)
+
+    # Set application icon
+    app.setWindowIcon(QIcon('./assets/logo.bmp'))
 
     # Start the application
     app.exec_()
