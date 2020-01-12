@@ -55,6 +55,10 @@ Hotkeys:
 - Left arrow: display the previous image (if the selected folder contains more than one image)
 - Right arrow: display the next image (if the selected folder contains more than one image)
 
+Supported image formats:
+
+This application supports the following image formats: jpeg, png, tiff.
+
 Doxygen documentation:
 
 This application support Doxygen doc generation.
