@@ -1,11 +1,9 @@
 # Image Viewer
 
-Author: Francesco Areoluci
-
 This python application is an image viewer which support visualization of EXIF data.
 It is build with pyqt framework and it relies on qml language to structure the view.
 
-Features:
+The application features:
 - Single image viewer
 - Folder selection for multiple image view
 - Image rotation by 90 degrees steps
@@ -14,24 +12,28 @@ Features:
 - Hotkeys
 - Responsive window
 
-Dependencies:
+## Dependencies
+
+Major dependencies:
 - pyqt
 - exifread
 
-In order to install these dependencies:
-- Using Anaconda as an environment manager:
+Using Anaconda as environment manager, you can install these dependencies as:
 
 ```
 conda install -c anaconda pyqt
 conda install -c conda-forge exifread
 ```
 
-How to launch this application:
+## Usage
+
+Once the environment has been set up, the application can be launched with:
+
 ```
 python ImageViewer.py
 ```
 
-How to use:
+### How to use:
 
 Once the application has been started, you can select an image to be viewed by clicking
 on the button 'Choose an image' or you can select a folder to view all the images
@@ -45,7 +47,7 @@ If an image has some exif data stored, you can view them by clicking on the butt
 If an image contains geolocalization tags, by clicking on Latitude or Longitude entry a
 browser will be opened and position will be displayed in a Google Maps page.
 
-Hotkeys:
+## Hotkeys
 
 - Ctrl+f: open folder selection
 - Ctrl+i: open single image selection
@@ -59,7 +61,7 @@ Supported image formats:
 
 This application supports the following image formats: jpeg, png, tiff.
 
-Doxygen documentation:
+## Documentation:
 
 This application support Doxygen doc generation.
 In order to automatically generate documentation, if you have installed Doxygen, run the following command:
@@ -68,8 +70,8 @@ In order to automatically generate documentation, if you have installed Doxygen,
 doxygenn doxy
 ```
 
-If you don't have installed Doxygen, you can follow this how to: http://www.doxygen.nl/download.html
+If you don't have installed Doxygen, you can follow the instructions at this link; http://www.doxygen.nl/download.html
 
-Testing
+## Testing
 
 This application has been tested on Ubuntu 18.04 and Windows 10.
